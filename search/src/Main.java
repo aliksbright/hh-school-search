@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class Main {
 
@@ -34,7 +35,11 @@ public class Main {
                 }
                 break;
             case "SEARCH":
-                search(args[1], args[2]);
+                try {
+                    search(args[1], args[2]);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 break;
             default:
                 System.out.println("There's not such mode. Try again.");
@@ -77,6 +82,15 @@ public class Main {
         writer.close();
     }
 
-    private static void search(String pathToIndex, String searchQuery) {
+    private static void search(String pathToIndex, String searchQuery) throws IOException {
+        File index = new File(pathToIndex);
+        BufferedReader reader = new BufferedReader(new FileReader(index));
+        ArrayList<String> pair;
+        HashMap<String, String> resultIndex = new HashMap<>();
+        for (String line = reader.readLine(); line != null; line = reader.readLine()) {
+            pair = new ArrayList<>(Arrays.asList(line.split(":")));
+            resultIndex.put(pair.get(0), pair.get(1));
+        }
+        System.out.println("We found " + searchQuery + " in docs:\n" + resultIndex.get(searchQuery));
     }
 }
