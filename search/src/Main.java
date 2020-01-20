@@ -71,7 +71,6 @@ public class Main {
                     indexTerms.get(word).add(docsCount);
                 }
             }
-            tokenizationLine = null;
             docsCount++;
         }
         reader.close();
