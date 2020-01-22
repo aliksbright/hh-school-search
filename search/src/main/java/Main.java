@@ -1,11 +1,11 @@
 import java.io.*;
 import java.util.*;
-import java.util.stream.Stream;
 
 public class Main {
 
     private static Map<String, HashSet<Integer>> indexTerms = new HashMap<>();
     private static Map<Integer, String> indexDocs = new HashMap<>();
+    private static Map<String, HashSet<String>> finalIndex = new HashMap<>();
 
     private static List<String> stopWords = Arrays.asList("a", "able", "about",
             "across", "after", "all", "almost", "also", "am", "among", "an",
@@ -31,14 +31,14 @@ public class Main {
                 try {
                     index(args[1], args[2]);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    System.out.println("The error occurs... Maybe you've not created files for index and source?");
                 }
                 break;
             case "SEARCH":
                 try {
                     search(args[1], args[2]);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    System.out.println("The error occurs... Maybe you've not created file for index?");
                 }
                 break;
             default:
@@ -48,13 +48,32 @@ public class Main {
     }
 
     private static void index(String pathToIndex, String pathToSourceFile) throws IOException {
-        File index = new File(pathToIndex);
         File source = new File(pathToSourceFile);
+        parsingInitialFile(source);
+        File index = new File(pathToIndex);
+        createFinalIndex(index);
+    }
+
+    private static void search(String pathToIndex, String searchQuery) throws IOException {
+        File index = new File(pathToIndex);
+        BufferedReader reader = new BufferedReader(new FileReader(index));
+        ArrayList<String> pair;
+        HashMap<String, ArrayList<String>> resultIndex = new HashMap<>();
+        for (String line = reader.readLine(); line != null; line = reader.readLine()) {
+            pair = new ArrayList<>(Arrays.asList(line.split(":")));
+            resultIndex.put(pair.get(0),
+                    new ArrayList<>(Arrays.asList(pair.get(1).substring(1, pair.get(1).length()-1).split(","))));
+        }
+        System.out.println("We found " + searchQuery + " in docs:\n");
+        for (String foundDoc : resultIndex.get(searchQuery)) {
+            System.out.println(foundDoc.trim());
+        }
+    }
+
+    private static void parsingInitialFile(File source) throws IOException {
         ArrayList<String> tokenizationLine;
-        int docsCount = 0;
         BufferedReader reader = new BufferedReader(new FileReader(source));
         for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-            indexDocs.put(docsCount, line);
             tokenizationLine = new ArrayList<>(Arrays.asList(line.split(" ")));
             for (String word : tokenizationLine) {
                 if (stopWords.contains(word)) {
@@ -64,32 +83,22 @@ public class Main {
                     word = word.substring(0, word.length() - 1);
                 }
                 word = word.toLowerCase();
-                if (indexTerms.containsKey(word)) {
-                    indexTerms.get(word).add(docsCount);
+                if (finalIndex.containsKey(word)) {
+                    finalIndex.get(word).add(line);
                 } else {
-                    indexTerms.put(word, new HashSet<>());
-                    indexTerms.get(word).add(docsCount);
+                    finalIndex.put(word, new HashSet<>());
+                    finalIndex.get(word).add(line);
                 }
             }
-            docsCount++;
         }
         reader.close();
+    }
+
+    private static void createFinalIndex(File index) throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter(index));
-        for (Map.Entry<String, HashSet<Integer>> term : indexTerms.entrySet()) {
+        for (Map.Entry<String, HashSet<String>> term : finalIndex.entrySet()) {
             writer.write(term.getKey() + ":" + term.getValue() + "\n");
         }
         writer.close();
-    }
-
-    private static void search(String pathToIndex, String searchQuery) throws IOException {
-        File index = new File(pathToIndex);
-        BufferedReader reader = new BufferedReader(new FileReader(index));
-        ArrayList<String> pair;
-        HashMap<String, String> resultIndex = new HashMap<>();
-        for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-            pair = new ArrayList<>(Arrays.asList(line.split(":")));
-            resultIndex.put(pair.get(0), pair.get(1));
-        }
-        System.out.println("We found " + searchQuery + " in docs:\n" + resultIndex.get(searchQuery));
     }
 }
