@@ -3,6 +3,7 @@
 out/
 .directory
 *.iml
+target
 
 # Compiled class file
 *.class
