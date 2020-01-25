@@ -9,6 +9,9 @@ import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
+/**
+ * Класс индексатора
+ */
 public class Indexer {
 
     private Path indexDirectory;
@@ -25,6 +28,9 @@ public class Indexer {
         lemmatizer = new TextLemmatizer();
     }
 
+    /**
+     * строит индекс
+     */
     public void build() {
         AtomicInteger docCounter = new AtomicInteger(0);
         try(Stream<String> lines = Files.lines(indexedFile)) {
