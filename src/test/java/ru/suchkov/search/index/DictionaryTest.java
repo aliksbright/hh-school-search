@@ -1,8 +1,10 @@
 package ru.suchkov.search.index;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.junit.Assert.*;
@@ -10,7 +12,7 @@ import static org.junit.Assert.*;
 public class DictionaryTest {
 
     private Dictionary dictionary;
-    private String TEST_INDEX_DIR = "/Users/denis/Desktop/hh-school-search/src/test/resources/data";
+    private Path folder = Paths.get("src","test","resources", "data");
 
     @Before
     public void init() {
@@ -20,6 +22,15 @@ public class DictionaryTest {
         dictionary.add("привет");
         dictionary.add("пока");
         dictionary.add("1");
+
+        folder.resolve("dictionary").toFile().delete();
+        folder.resolve("matrix").toFile().delete();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        folder.resolve("dictionary").toFile().delete();
+        folder.resolve("matrix").toFile().delete();
     }
 
     @Test
@@ -43,10 +54,10 @@ public class DictionaryTest {
 
     @Test
     public void saveAndRestore() {
-        dictionary.save(Paths.get(TEST_INDEX_DIR));
+        dictionary.save(folder);
 
         Dictionary restored = new Dictionary();
-        restored.load(Paths.get(TEST_INDEX_DIR));
+        restored.load(folder);
 
         assertEquals(dictionary.getDictionary(), restored.getDictionary());
         assertEquals(dictionary.getSize(), restored.getSize());

@@ -1,8 +1,10 @@
 package ru.suchkov.search.index;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -13,11 +15,19 @@ import static org.junit.Assert.*;
 public class MatrixTest {
 
     private Matrix matrix;
-    private String TEST_INDEX_DIR = "/Users/denis/Desktop/hh-school-search/src/test/resources/data";
+    private Path folder = Paths.get("src","test","resources", "data");
 
     @Before
     public void init() {
         matrix = new Matrix();
+        folder.resolve("dictionary").toFile().delete();
+        folder.resolve("matrix").toFile().delete();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        folder.resolve("dictionary").toFile().delete();
+        folder.resolve("matrix").toFile().delete();
     }
 
     @Test
@@ -100,10 +110,10 @@ public class MatrixTest {
             }
         }
 
-        matrix.save(Paths.get(TEST_INDEX_DIR));
+        matrix.save(folder);
 
         Matrix restored = new Matrix();
-        restored.load(Paths.get(TEST_INDEX_DIR));
+        restored.load(folder);
 
         assertEquals(matrix.getDocsQuantity(), restored.getDocsQuantity());
         assertEquals(matrix.getMatrix(), restored.getMatrix());

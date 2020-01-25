@@ -1,6 +1,7 @@
 package ru.suchkov.search.index;
 
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,6 +20,13 @@ public class IndexerTest {
     @Before
     public void init() {
         indexer = new Indexer(folder, folder.resolve("test"));
+
+        folder.resolve("dictionary").toFile().delete();
+        folder.resolve("matrix").toFile().delete();
+    }
+
+    @After
+    public void tearDown() throws Exception {
         folder.resolve("dictionary").toFile().delete();
         folder.resolve("matrix").toFile().delete();
     }
