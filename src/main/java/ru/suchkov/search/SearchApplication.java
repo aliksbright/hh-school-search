@@ -3,6 +3,8 @@ package ru.suchkov.search;
 
 import ru.suchkov.search.index.Indexer;
 
+import java.nio.file.Path;
+
 public class SearchApplication {
 
 	public static void main(String[] args) {
@@ -15,7 +17,7 @@ public class SearchApplication {
 					System.out.println("Необходимо ввести путь к индексируемому файлу " +
 							"и директорию для построения индекса");
 				} else {
-					new Indexer(args[1], args[2]).build();
+					new Indexer(Path.of(args[1]), Path.of(args[2])).build();
 				}
 			} else {
 				System.out.println("Неизвестная команда.");
