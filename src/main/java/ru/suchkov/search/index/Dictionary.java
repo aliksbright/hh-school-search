@@ -46,7 +46,7 @@ public class Dictionary {
     }
 
     public int getKey(String word) {
-        return dictionary.get(word);
+        return dictionary.getOrDefault(word, 0);
     }
 
     /**
