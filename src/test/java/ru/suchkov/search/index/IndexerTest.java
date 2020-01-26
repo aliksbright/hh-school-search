@@ -12,8 +12,6 @@ import static org.junit.Assert.*;
 
 public class IndexerTest {
 
-    // TODO base dir tests
-
     private Indexer indexer;
     private Path folder = Paths.get("src","test","resources", "data");
 
