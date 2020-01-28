@@ -62,7 +62,7 @@ public class Main {
         for (String line = reader.readLine(); line != null; line = reader.readLine()) {
             pair = new ArrayList<>(Arrays.asList(line.split(":")));
             resultIndex.put(pair.get(0),
-                    new ArrayList<>(Arrays.asList(pair.get(1).substring(1, pair.get(1).length()-1).split(","))));
+                    new ArrayList<>(Arrays.asList(pair.get(1).substring(1, pair.get(1).length() - 1).split(","))));
         }
         System.out.println("We found " + searchQuery + " in docs:\n");
         for (String foundDoc : resultIndex.get(searchQuery)) {
@@ -72,33 +72,33 @@ public class Main {
 
     private static void parsingInitialFile(File source) throws IOException {
         ArrayList<String> tokenizationLine;
-        BufferedReader reader = new BufferedReader(new FileReader(source));
-        for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-            tokenizationLine = new ArrayList<>(Arrays.asList(line.split(" ")));
-            for (String word : tokenizationLine) {
-                if (stopWords.contains(word)) {
-                    continue;
-                }
-                if (punctuationMarks.contains(word.substring(word.length() - 1))) {
-                    word = word.substring(0, word.length() - 1);
-                }
-                word = word.toLowerCase();
-                if (finalIndex.containsKey(word)) {
-                    finalIndex.get(word).add(line);
-                } else {
-                    finalIndex.put(word, new HashSet<>());
-                    finalIndex.get(word).add(line);
+        try (BufferedReader reader = new BufferedReader(new FileReader(source))) {
+            for (String line = reader.readLine(); line != null; line = reader.readLine()) {
+                tokenizationLine = new ArrayList<>(Arrays.asList(line.split(" ")));
+                for (String word : tokenizationLine) {
+                    if (stopWords.contains(word)) {
+                        continue;
+                    }
+                    if (punctuationMarks.contains(word.substring(word.length() - 1))) {
+                        word = word.substring(0, word.length() - 1);
+                    }
+                    word = word.toLowerCase();
+                    if (finalIndex.containsKey(word)) {
+                        finalIndex.get(word).add(line);
+                    } else {
+                        finalIndex.put(word, new HashSet<>());
+                        finalIndex.get(word).add(line);
+                    }
                 }
             }
         }
-        reader.close();
     }
 
     private static void createFinalIndex(File index) throws IOException {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(index));
-        for (Map.Entry<String, HashSet<String>> term : finalIndex.entrySet()) {
-            writer.write(term.getKey() + ":" + term.getValue() + "\n");
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(index))) {
+            for (Map.Entry<String, HashSet<String>> term : finalIndex.entrySet()) {
+                writer.write(term.getKey() + ":" + term.getValue() + "\n");
+            }
         }
-        writer.close();
     }
 }
