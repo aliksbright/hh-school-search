@@ -42,7 +42,10 @@ public class Main {
                 }
                 break;
             default:
-                System.out.println("There's not such mode. Try again.");
+                System.out.println("There are only 2 modes in this program\n" +
+                        "For INDEX mode enter: java -jar hh-search-1.0-SNAPSHOT.jar INDEX path-to-index-file path-to-source-file\n" +
+                        "For SEARCH mode enter: java -jar hh-search-1.0-SNAPSHOT.jar SEARCH path-to-index-file search-query\n" +
+                        "Try again.");
                 break;
         }
     }
