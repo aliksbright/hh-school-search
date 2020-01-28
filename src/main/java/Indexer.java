@@ -6,21 +6,10 @@ import java.util.Map;
 
 public class Indexer {
 
-    public List<Document> getDocsFromFile(String filename) {
+    public ArrayList<Document> getDocsFromFile(String filename) {
         ArrayList<Document> docs = new ArrayList<>();
-        File file = new File(filename);
-        try {
-            FileReader fReader = new FileReader(file);
-            BufferedReader reader = new BufferedReader(fReader);
-            String doc = reader.readLine();
-            while (doc != null) {
-                docs.add(new Document(doc));
-                doc = reader.readLine();
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        for (String doc : getLinesFromFile(filename)) {
+            docs.add(new Document(doc));
         }
         return docs;
     }
@@ -59,22 +48,22 @@ public class Indexer {
         return termDocs;
     }
 
-    public ArrayList<String> getStopWordsFromFile(String filename) {
-        ArrayList<String> stopWords = new ArrayList<>();
+    public ArrayList<String> getLinesFromFile(String filename) {
+        ArrayList<String> lines = new ArrayList<>();
         try {
             FileReader fReader = new FileReader(filename);
             BufferedReader reader = new BufferedReader(fReader);
-            String word = reader.readLine();
-            while (word != null) {
-                stopWords.add(word);
-                word = reader.readLine();
+            String line = reader.readLine();
+            while (line != null) {
+                lines.add(line);
+                line = reader.readLine();
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return stopWords;
+        return lines;
     }
 
 
