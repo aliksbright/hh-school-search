@@ -16,51 +16,42 @@ import static main.Utils.getWordsFromLine;
 import static main.Utils.readIndexLong;
 
 public class UpdateIndex {
-    private static Map<String, List<Long>> index;
-    private static RandomAccessFile docFile;
-    private static long positionInIndex;
+    private Map<String, List<Long>> index;
+    private RandomAccessFile docFile;
+    private long positionInIndex;
 
-    public static void addWordsToIndex(String indexPath, String fileToAddPath) throws IOException {
-        index = readIndexLong(indexPath + "index.txt");
-        docFile = new RandomAccessFile(indexPath + "doc_file.txt", "rw");
+    public void addWordsToIndex(String indexPath, String docFilePath, String fileToAddPath) throws IOException {
+        index = readIndexLong(indexPath);
+        docFile = new RandomAccessFile(docFilePath, "rw");
         positionInIndex = docFile.length();
         docFile.seek(positionInIndex);
         try (Stream<String> stream = Files.lines(Paths.get(fileToAddPath))) {
             stream
-                    .peek(documentLine -> {
-
+                    .forEach(documentLine -> {
                         try {
-                            saveDocument(documentLine);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                    })
-                    .peek(documentLine -> getWordsFromLine(documentLine)
-                            .forEach(word -> updateIndexMapLong(positionInIndex, word)))
-                    .forEach(s -> {
-                        try {
+                            saveDocumentToFile(documentLine, docFile);
+                            getWordsFromLine(documentLine)
+                                    .forEach(word -> updateIndexMap(positionInIndex, word, index));
                             positionInIndex = docFile.length();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     });
 
-
             ObjectMapper objectMapper = new ObjectMapper();
-            File indexFile = new File(indexPath + "index.txt");
+            File indexFile = new File(indexPath);
             objectMapper.writeValue(indexFile, index);
         }
         docFile.close();
     }
 
-    private static void saveDocument(String documentLine) throws IOException {
+    private void saveDocumentToFile(String documentLine, RandomAccessFile docFile) throws IOException {
         docFile.seek(docFile.length());
-        docFile.writeBytes(docFile.length() != 0 ? "\n" + documentLine : documentLine);
+        docFile.writeBytes(documentLine + "\n");
     }
 
 
-    private static void updateIndexMapLong(Long linesIndex, String word) {
+    private void updateIndexMap(Long linesIndex, String word, Map<String, List<Long>> index) {
         if (!index.containsKey(word)) {
             index.put(word, new ArrayList<>());
         }

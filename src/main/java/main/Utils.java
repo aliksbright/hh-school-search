@@ -14,9 +14,9 @@ public class Utils {
 
     private static StringBuilder sb = new StringBuilder();
 
-    public static Map<String, List<Long>> readIndexLong(String indexPath) {
+    public static Map<String, List<Long>> readIndexLong(String indexPath) throws IOException {
         File file = new File(indexPath);
-        if (file.exists() && file.length() != 0) {
+        if (file.length() != 0) {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {
@@ -24,6 +24,7 @@ public class Utils {
                 });
             } catch (IOException e) {
                 e.printStackTrace();
+
             }
         }
         return new HashMap<>();
@@ -32,7 +33,9 @@ public class Utils {
 
     public static void permuteIteration(ArrayList<String> queryPermutations, String[] arr, int index, int limit) {
         if (index >= limit) {
-            for (int i = 0; i < limit; i++) sb.append(arr[i]).append(" ");
+            for (int i = 0; i < limit; i++) {
+                sb.append(arr[i]).append(" ");
+            }
             queryPermutations.add(sb.toString());
             sb.delete(0, sb.length());
             return;
@@ -67,14 +70,15 @@ public class Utils {
     }
 
 
-    public static String searchForKeywords(String query) {
-        final String[] query_words = query.split(" ");
+    public static Search.QUERY_KEYS searchForKeywords(String query) {
+        for (String keyWord : query.split(" ")) {
+            try {
+                return Search.QUERY_KEYS.valueOf(keyWord.toUpperCase());
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+        return (query.split(" ").length > 1 ? Search.QUERY_KEYS.OR : Search.QUERY_KEYS.NOKEYS);
 
-        String keyWords = Arrays.stream(query_words)
-                .map(String::toLowerCase)
-                .filter(s -> new ArrayList<>(Arrays.asList("and", "or", "not")).contains(s))
-                .limit(1).collect(Collectors.joining());
-        return (keyWords.equals("") && query_words.length > 1 ? "or" : keyWords);
     }
 
     public static Set<String> getWordsFromLine(String docLine) {

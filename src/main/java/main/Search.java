@@ -5,53 +5,55 @@ import java.io.RandomAccessFile;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static main.Search.QUERY_KEYS.*;
 import static main.Utils.*;
 
 
 public class Search {
-    private static ArrayList<String> queryPermutations = new ArrayList<>();
-    private static final ArrayList<String> EXCLUDED_WORDS = new ArrayList<>(Arrays.asList("в", "на", "работа", "and", "or", "not"));
-    private static Map<String, List<Long>> index;
-    private static RandomAccessFile docFile;
+    private final ArrayList<String> queryPermutations = new ArrayList<>();
+    private final ArrayList<String> EXCLUDED_WORDS = new ArrayList<>(Arrays.asList("в", "на", "работа", "and", "or", "not"));
+    private final String EMPTY_RESULT = "";
+    private Map<String, List<Long>> index;
+    private RandomAccessFile docFile;
 
 
-    public static void search(String indexPath, String query, int limit) throws IOException {
-        index = readIndexLong(indexPath + "index.txt");
-        docFile = new RandomAccessFile(indexPath + "doc_file.txt", "rw");
+    public void search(String indexPath, String docFilePath, String query, int limit) throws IOException {
+        String NOTHING_FOUND = "Ничего не нашлось :(";
+        index = readIndexLong(indexPath);
+        docFile = new RandomAccessFile(docFilePath, "rw");
 
         List<String> searched;
         switch (searchForKeywords(query)) {
-            case "and":
+            case AND:
                 searched = searchWordsWithAnd(index, query);
                 break;
-            case "or":
+            case OR:
                 searched = searchWordsWithOr(index, query, limit);
                 break;
-            case "not":
+            case NOT:
                 searched = searchWordsWithNot(query);
                 break;
             default:
                 searched = searchOneWord(index, query);
 
         }
-        System.out.println(searched.isEmpty() ? "Ничего не нашлось :(" : searched);
+        System.out.println(searched.isEmpty() ? NOTHING_FOUND : searched);
 
     }
 
-    private static List<String> searchOneWord(Map<String, List<Long>> indexLong, String wordToFind) {
-        return indexLong.getOrDefault(wordToFind, new ArrayList<>()).stream().map(aLong -> {
+    private List<String> searchOneWord(Map<String, List<Long>> indexLong, String wordToFind) {
+        return indexLong.getOrDefault(wordToFind, Collections.emptyList()).stream().map(aLong -> {
             try {
-                docFile.seek(aLong + 1L);
+                docFile.seek(aLong);
                 return docFile.readLine();
-
             } catch (IOException e) {
                 e.printStackTrace();
-                return "";
+                return EMPTY_RESULT;
             }
         }).collect(Collectors.toList());
     }
 
-    private static List<String> searchWordsWithNot(String query) {
+    private List<String> searchWordsWithNot(String query) {
         ArrayList<String> queryWords = new ArrayList<>(Arrays.asList(query.split(" ")));
         List<String> originalWord = searchOneWord(index, queryWords.get(0));
         queryWords.remove(0);
@@ -61,7 +63,7 @@ public class Search {
         return originalWord;
     }
 
-    private static List<String> searchWordsWithAnd(Map<String, List<Long>> index, String query) {
+    private List<String> searchWordsWithAnd(Map<String, List<Long>> index, String query) {
         final Set<List<Long>> eachWordDocs = Arrays.stream(query.split(" "))
                 .map(String::toLowerCase)
                 .filter(s -> !EXCLUDED_WORDS.contains(s))
@@ -71,18 +73,17 @@ public class Search {
         return findCommonDocsLong(eachWordDocs).stream()
                 .map(aLong -> {
                     try {
-                        docFile.seek(aLong + 1L);
+                        docFile.seek(aLong);
                         return docFile.readLine();
-
                     } catch (IOException e) {
                         e.printStackTrace();
-                        return "";
+                        return EMPTY_RESULT;
                     }
                 }).collect(Collectors.toList());
 
     }
 
-    public static List<String> searchWordsWithOr(Map<String, List<Long>> index, String query, Integer minWordsIncluded) {
+    private List<String> searchWordsWithOr(Map<String, List<Long>> index, String query, Integer minWordsIncluded) {
         permuteIteration(queryPermutations, Arrays.stream(query.split(" "))
                 .map(String::toLowerCase)
                 .filter(s -> !EXCLUDED_WORDS.contains(s))
@@ -90,10 +91,16 @@ public class Search {
                 .distinct()
                 .toArray(String[]::new), 0, minWordsIncluded);
         return queryPermutations.stream()
-                .map(permutation -> searchWordsWithAnd(Search.index, permutation))
+                .map(permutation -> searchWordsWithAnd(index, permutation))
                 .flatMap(Collection::stream)
                 .distinct()
                 .collect(Collectors.toList());
     }
 
+    public enum QUERY_KEYS {
+        AND,
+        OR,
+        NOT,
+        NOKEYS
+    }
 }
