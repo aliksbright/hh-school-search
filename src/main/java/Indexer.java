@@ -50,10 +50,13 @@ public class Indexer {
         return docs;
     }
 
-    public List<Map<String, Integer>> removeStopWords(List<Map<String, Integer>> termDocs) {
-
-
-
+    public List<Map<String, Integer>> removeStopWords(List<Map<String, Integer>> termDocs, ArrayList<String> stopWords) {
+        for (String word : stopWords) {
+            for (Map<String, Integer> doc : termDocs) {
+                doc.remove(word);
+            }
+        }
+        return termDocs;
     }
 
     public ArrayList<String> getStopWordsFromFile(String filename) {
