@@ -1,9 +1,10 @@
 package homework.search;
 
+import homework.search.service.IndexBuilder;
 import homework.search.service.IndexSearcher;
-import homework.search.service.Indexing;
+import homework.search.service.StopWordsAnalysis;
+import homework.search.service.Tokenizer;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,51 +12,56 @@ import static java.lang.String.valueOf;
 
 public class Searcher {
     private final IndexSearcher searcher;
-    private final Indexing indexing;
+    private static Tokenizer tokenizer;
+    private static StopWordsAnalysis stopWordsAnalysis;
 
     public Searcher(String filePath){
-        indexing = new Indexing(filePath);
-        searcher = new IndexSearcher(indexing.readIndex());
+        new IndexBuilder(filePath);
+        searcher = new IndexSearcher(IndexBuilder.readIndex());
+        tokenizer = new Tokenizer();
+        stopWordsAnalysis = new StopWordsAnalysis();
     }
 
 
-    public void analyzerSearch (String query){
+    public List<Integer> searchDocs(String query){
         List<Integer> documents;
         if(valueOf(query.charAt(0)).equals("\"") &&
                 valueOf(query.charAt(query.length()-1)).equals("\"")){
-            List<String> queryArr = Arrays.asList(query.substring(1,query.length()-1).split("[.,:;!?\\s]+"));
-            documents = searchByPhrase(queryArr);
+            List<String> terms = getTerms(query.substring(1,query.length()-1));
+            documents = getDocIdsByPhrase(terms);
         }
         else {
-            List<String> queryArr = Arrays.asList(query.split("[.,:;!?\\s]+"));
-            documents = searchDoc(queryArr);
+            List<String> terms = getTerms(query);
+            documents = getDocIds(terms);
         }
-        printAnswer(query, documents);
+        return documents;
     }
 
 
-    public List<Integer> searchDoc (List<String> queryArr) {
-        return searcher.searchDocs(queryArr);
+    public List<Integer> getDocIds(List<String> queries) {
+        return searcher.getDocIds(queries);
     }
 
-    public List<Integer> searchByPhrase(List<String> queryArr) {
-        return searcher.searchDocsByPhrase(queryArr);
+    public List<Integer> getDocIdsByPhrase(List<String> queries) {
+        return searcher.getDocIdsByPhrase(queries);
     }
 
-    private void printAnswer(String query, List<Integer> documents) {
-        if (!documents.isEmpty()) {
-//            System.out.println("По запросу " + "\u001B[1m" + query.toUpperCase() + "\u001b[0m" + " найдены документы:");
-            System.out.println("По запросу " + query.toUpperCase() + " найдены документы:");
-            System.out.println(getStringFromList(documents));
-        } else {
-//            System.out.println("По запросу " + "\u001B[1m" + query.toUpperCase() + "\u001b[0m" + " ничего не найдено :(");
+    public void printAnswer(String query, List<Integer> docIds) {
+        if (docIds.isEmpty()) {
             System.out.println("По запросу " + query.toUpperCase() + " ничего не найдено :(");
+        } else {
+            System.out.println("По запросу " + query.toUpperCase() + " найдены документы:");
+            System.out.println(getStringFromList(docIds));
         }
     }
 
-    private String getStringFromList(List<Integer> answer) {
-        return answer.stream()
+    private String getStringFromList(List<Integer> docIds) {
+        return docIds.stream()
                         .map(Object::toString)
                         .collect(Collectors.joining(", "));
+    }
+
+    private List<String> getTerms(String text) {
+        return stopWordsAnalysis.execute(tokenizer.getTerms(text));
     }
 }
