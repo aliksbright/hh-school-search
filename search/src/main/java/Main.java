@@ -31,14 +31,14 @@ public class Main {
                 try {
                     index(args[1], args[2]);
                 } catch (IOException e) {
-                    System.out.println("The error occurs... Maybe you've not created files for index and source?");
+                    System.out.println("The error occurs... Maybe you've entered incorrect path for source file?");
                 }
                 break;
             case "SEARCH":
                 try {
                     search(args[1], args[2]);
                 } catch (IOException e) {
-                    System.out.println("The error occurs... Maybe you've not created file for index?");
+                    System.out.println("The error occurs... Maybe you've entered incorrect path for index file?");
                 }
                 break;
             default:
@@ -59,17 +59,18 @@ public class Main {
 
     private static void search(String pathToIndex, String searchQuery) throws IOException {
         File index = new File(pathToIndex);
-        BufferedReader reader = new BufferedReader(new FileReader(index));
-        ArrayList<String> pair;
-        HashMap<String, ArrayList<String>> resultIndex = new HashMap<>();
-        for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-            pair = new ArrayList<>(Arrays.asList(line.split(":")));
-            resultIndex.put(pair.get(0),
-                    new ArrayList<>(Arrays.asList(pair.get(1).substring(1, pair.get(1).length() - 1).split(","))));
-        }
-        System.out.println("We found " + searchQuery + " in docs:\n");
-        for (String foundDoc : resultIndex.get(searchQuery)) {
-            System.out.println(foundDoc.trim());
+        try (BufferedReader reader = new BufferedReader(new FileReader(index))) {
+            ArrayList<String> pair;
+            HashMap<String, ArrayList<String>> resultIndex = new HashMap<>();
+            for (String line = reader.readLine(); line != null; line = reader.readLine()) {
+                pair = new ArrayList<>(Arrays.asList(line.split(":")));
+                resultIndex.put(pair.get(0),
+                        new ArrayList<>(Arrays.asList(pair.get(1).substring(1, pair.get(1).length() - 1).split(","))));
+            }
+            System.out.println("We found " + searchQuery + " in docs:\n");
+            for (String foundDoc : resultIndex.get(searchQuery)) {
+                System.out.println(foundDoc.trim());
+            }
         }
     }
 
