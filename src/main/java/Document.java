@@ -8,16 +8,16 @@ public class Document {
         this.primary = primary;
     }
 
+    private void setTermPosition () {
+
+    }
+
     public String getPrimary() {
         return primary;
     }
 
     public HashMap<String, Integer> getTermPosition() {
         return termPosition;
-    }
-
-    public void setTermPosition(HashMap<String, Integer> termPosition) {
-        this.termPosition = termPosition;
     }
 
 }
