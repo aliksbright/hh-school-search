@@ -14,38 +14,27 @@ public class Indexer {
         return docs;
     }
 
-    public List<List<String>> getTermDocs(List<Document> docs) {
-        List<List<String>> termDocs = new ArrayList<>();
-        for (Document doc : docs) {
-            List<String> as = List.of(doc.getPrimary().split("[\\s,;:.!?/]"));
-            termDocs.add(as);
-        }
-        return termDocs;
+    public List<String> getTerms(Document doc) {
+        return List.of(doc.getPrimary().split("[\\s,;:.!?/]"));
     }
 
-    public List<List<String>> getLemmatizedTermDocs(List<List<String>> termDocs) {
+    public List<String> getLemmatizedTerms(List<String> terms) {
         return null;
     }
 
-    public List<Map<String, Integer>> getTermPositionDocs(List<List<String>> termDocs) {
-        List<Map<String, Integer>> docs = new ArrayList<>();
-        for (List<String> doc : termDocs) {
+    public Map<String, Integer> getTermsAndPositions(List<String> terms) {
             Map<String, Integer> termPosition = new HashMap<>();
-            for (int i = 0; i < doc.size(); i++) {
-                termPosition.put(doc.get(i), i);
+            for (int i = 0; i < terms.size(); i++) {
+                termPosition.put(terms.get(i), i);
             }
-            docs.add(termPosition);
-        }
-        return docs;
+        return termPosition;
     }
 
-    public List<Map<String, Integer>> removeStopWords(List<Map<String, Integer>> termDocs, ArrayList<String> stopWords) {
+    public Map<String, Integer> removeStopWords(Map<String, Integer> terms, ArrayList<String> stopWords) {
         for (String word : stopWords) {
-            for (Map<String, Integer> doc : termDocs) {
-                doc.remove(word);
-            }
+                terms.remove(word);
         }
-        return termDocs;
+        return terms;
     }
 
     public ArrayList<String> getLinesFromFile(String filename) {
