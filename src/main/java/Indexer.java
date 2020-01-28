@@ -25,20 +25,20 @@ public class Indexer {
         return docs;
     }
 
-    public List<List<String>> getTermDocs (List<String> docs) {
+    public List<List<String>> getTermDocs(List<Document> docs) {
         List<List<String>> termDocs = new ArrayList<>();
-        for (String doc: docs) {
-            List<String> as = List.of(doc.split("[\\s,;:.!?/]"));
+        for (Document doc : docs) {
+            List<String> as = List.of(doc.getPrimary().split("[\\s,;:.!?/]"));
             termDocs.add(as);
         }
         return termDocs;
     }
 
-    public List<List<String>> getLemmatizedTermDocs (List<List<String>> termDocs) {
+    public List<List<String>> getLemmatizedTermDocs(List<List<String>> termDocs) {
         return null;
     }
 
-    public List<Map<String, Integer>> getTermPositionDocs (List<List<String>> termDocs) {
+    public List<Map<String, Integer>> getTermPositionDocs(List<List<String>> termDocs) {
         List<Map<String, Integer>> docs = new ArrayList<>();
         for (List<String> doc : termDocs) {
             Map<String, Integer> termPosition = new HashMap<>();
@@ -50,12 +50,29 @@ public class Indexer {
         return docs;
     }
 
-    public List<Map<String, Integer>> removeStopWords (List<Map<String, Integer>> termDocs) {
+    public List<Map<String, Integer>> removeStopWords(List<Map<String, Integer>> termDocs) {
+
+
 
     }
 
-
-
+    public ArrayList<String> getStopWordsFromFile(String filename) {
+        ArrayList<String> stopWords = new ArrayList<>();
+        try {
+            FileReader fReader = new FileReader(filename);
+            BufferedReader reader = new BufferedReader(fReader);
+            String word = reader.readLine();
+            while (word != null) {
+                stopWords.add(word);
+                word = reader.readLine();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return stopWords;
+    }
 
 
 }
