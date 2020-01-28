@@ -1,11 +1,12 @@
-package main.Utils;
+package main;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static main.Utils.Utils.readIndexLong;
+import static main.Utils.*;
+
 
 public class Search {
     private static ArrayList<String> queryPermutations = new ArrayList<>();
@@ -19,7 +20,7 @@ public class Search {
         docFile = new RandomAccessFile(indexPath + "doc_file.txt", "rw");
 
         List<String> searched;
-        switch (Utils.searchForKeywords(query)) {
+        switch (searchForKeywords(query)) {
             case "and":
                 searched = searchWordsWithAnd(index, query);
                 break;
@@ -67,7 +68,7 @@ public class Search {
                 .filter(index::containsKey)
                 .map(index::get)
                 .collect(Collectors.toSet());
-        return Utils.findCommonDocsLong(eachWordDocs).stream()
+        return findCommonDocsLong(eachWordDocs).stream()
                 .map(aLong -> {
                     try {
                         docFile.seek(aLong + 1L);
@@ -82,7 +83,7 @@ public class Search {
     }
 
     public static List<String> searchWordsWithOr(Map<String, List<Long>> index, String query, Integer minWordsIncluded) {
-        Utils.permuteIteration(queryPermutations, Arrays.stream(query.split(" "))
+        permuteIteration(queryPermutations, Arrays.stream(query.split(" "))
                 .map(String::toLowerCase)
                 .filter(s -> !EXCLUDED_WORDS.contains(s))
                 .filter(index::containsKey)

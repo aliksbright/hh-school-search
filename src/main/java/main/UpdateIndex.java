@@ -1,4 +1,4 @@
-package main.Utils;
+package main;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -7,8 +7,13 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
+
+import static main.Utils.getWordsFromLine;
+import static main.Utils.readIndexLong;
 
 public class UpdateIndex {
     private static Map<String, List<Long>> index;
@@ -16,7 +21,7 @@ public class UpdateIndex {
     private static long positionInIndex;
 
     public static void addWordsToIndex(String indexPath, String fileToAddPath) throws IOException {
-        index = Utils.readIndexLong(indexPath + "index.txt");
+        index = readIndexLong(indexPath + "index.txt");
         docFile = new RandomAccessFile(indexPath + "doc_file.txt", "rw");
         positionInIndex = docFile.length();
         docFile.seek(positionInIndex);
@@ -31,7 +36,7 @@ public class UpdateIndex {
                         }
 
                     })
-                    .peek(documentLine -> Utils.getWordsFromLine(documentLine)
+                    .peek(documentLine -> getWordsFromLine(documentLine)
                             .forEach(word -> updateIndexMapLong(positionInIndex, word)))
                     .forEach(s -> {
                         try {

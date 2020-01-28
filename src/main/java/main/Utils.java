@@ -1,4 +1,4 @@
-package main.Utils;
+package main;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,7 +20,8 @@ public class Utils {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
             try {
-                return objectMapper.readValue(file, new TypeReference<Map<String, List<Long>>>() {});
+                return objectMapper.readValue(file, new TypeReference<Map<String, List<Long>>>() {
+                });
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -49,7 +50,6 @@ public class Utils {
             arr[i] = temp;
         }
     }
-
 
 
     public static List<Long> findCommonDocsLong(Set<List<Long>> eachWordDocs) {
