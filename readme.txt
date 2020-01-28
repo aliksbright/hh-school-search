@@ -52,8 +52,8 @@ termRecordSize  4b           uInt    Term record size including termRecordSize f
 termNameSize    4b           uInt    Term name size
 termName        termNameSize byte[]  Term name
 JumpTable:
-   jumpSize     4b           uInt    Jump table size
-   [            jumpSize
+   jumpSize     4b           uInt    Number of jump segments
+   [            jumpSize * ( 8 + 4)
     jumpSegment 8b           Long    Document segment
     offset      4b           uInt    Offset of this document in document list
    ]

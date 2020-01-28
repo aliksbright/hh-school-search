@@ -1,8 +1,9 @@
 package hhYandexTest;
 
-import java.nio.file.Path;
+import hhYandexTest.Indexer.Index;
+import hhYandexTest.InverseIndexer.InverseIndex;
+
 import java.nio.file.Paths;
-import java.util.Arrays;
 
 
 public class Main {
@@ -35,7 +36,7 @@ public class Main {
             }
 
             try {
-                Indexer idx = new Indexer(indexDirectory);
+                Index idx = new Index(indexDirectory);
                 InverseIndex inverseIndex = new InverseIndex(indexDirectory);
                 idx.indexFile(docFile, inverseIndex);
                 inverseIndex.dump();

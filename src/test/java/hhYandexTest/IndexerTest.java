@@ -1,5 +1,9 @@
 package hhYandexTest;
 
+import hhYandexTest.Indexer.IndexHeader;
+import hhYandexTest.Indexer.Index;
+import hhYandexTest.InverseIndexer.InverseIndex;
+import hhYandexTest.InverseIndexer.TermManager;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -23,7 +27,7 @@ public class IndexerTest {
         try {
             f = new RandomAccessFile(TEST_INDEX+"/index.bin", "rw");
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
             return;
         }
 
@@ -31,7 +35,7 @@ public class IndexerTest {
         try {
             header.toFile(f);
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
     }
 
@@ -51,7 +55,7 @@ public class IndexerTest {
     public void indexerTest() throws IndexerErrorException {
         indexerTestPrepare();
 
-        Indexer idx  = new Indexer(TEST_INDEX);
+        Index idx  = new Index(TEST_INDEX);
         idx.indexFile(TEST_FILE, null);
     }
 
@@ -59,19 +63,25 @@ public class IndexerTest {
     public void inverseIndexTest() throws IndexerErrorException, IOException {
         indexerTestPrepare();
 
-        InverseIndex    inverseIndex = new InverseIndex(TEST_INDEX);
+        InverseIndex inverseIndex = new InverseIndex(TEST_INDEX);
 
         inverseIndex.accept(0L, "   Привет,    дорогой друг !");
         inverseIndex.accept(1L, "Верной дорогой идем, товарищи!");
         inverseIndex.dump();
         inverseIndex.save();
+
+        System.out.println("---------------");
+
+        assertEquals(inverseIndex, new InverseIndex(TEST_INDEX, true));
+        assertNotEquals(inverseIndex, new InverseIndex(TEST_INDEX, false));
+
     }
 
     @Test
     public void indexerWithInverseIndexerTest() throws IndexerErrorException, IOException {
         indexerTestPrepare();
 
-        Indexer         idx = new Indexer(TEST_INDEX);
+        Index         idx = new Index(TEST_INDEX);
         InverseIndex    inverseIndex = new InverseIndex(TEST_INDEX);
 
         idx.indexFile(TEST_FILE, inverseIndex);
