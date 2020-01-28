@@ -2,7 +2,7 @@ import java.util.HashMap;
 
 public class Document {
     private String primary;
-    private HashMap<String, Integer> termPosition;
+    private HashMap<String, Integer> termsAndPositions;
 
     public Document(String primary) {
         this.primary = primary;
@@ -16,8 +16,8 @@ public class Document {
         return primary;
     }
 
-    public HashMap<String, Integer> getTermPosition() {
-        return termPosition;
+    public HashMap<String, Integer> getTermsAndPositions() {
+        return termsAndPositions;
     }
 
 }
