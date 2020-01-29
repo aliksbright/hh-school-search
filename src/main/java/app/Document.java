@@ -1,3 +1,8 @@
+package app;
+
+import app.index.Indexer;
+import app.util.FileOperations;
+
 import java.util.Map;
 
 public class Document {
@@ -14,7 +19,7 @@ public class Document {
         this.termsAndPositions = indexer.removeStopWords(
                 indexer.getTermsAndPositions(
                         indexer.getTerms(this)
-                ), indexer.getLinesFromFile("stop_words.txt")
+                ), FileOperations.getLinesFromFile("stop_words.txt")
         );
     }
 
