@@ -29,6 +29,7 @@ public class Main {
                 normalizeLines.forEach(System.out::println);
                 Index index = new Index(indexFile);
                 index.writeToIndex(normalizeLines);
+                index.readFromIndex();
             }
         } catch (IOException e) {
             e.printStackTrace();

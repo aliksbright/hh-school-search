@@ -10,7 +10,7 @@ public class Dictionary implements Serializable {
 
     public Dictionary(String pathToFile) {
         this.pathToFile = pathToFile;
-        termDictionary = new HashMap<>();
+        termDictionary = new HashMap<>(300);
     }
 
     public void put(List<String> allLines) {
