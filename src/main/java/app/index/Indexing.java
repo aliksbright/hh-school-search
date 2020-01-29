@@ -1,6 +1,6 @@
 package app.index;
 
-import app.Document;
+import app.structure.Document;
 import app.util.FileOperations;
 
 import java.util.ArrayList;

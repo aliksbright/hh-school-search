@@ -1,4 +1,4 @@
-package app;
+package app.structure;
 
 import app.index.Indexer;
 import app.util.FileOperations;

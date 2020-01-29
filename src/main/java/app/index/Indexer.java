@@ -1,6 +1,6 @@
 package app.index;
 
-import app.Document;
+import app.structure.Document;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

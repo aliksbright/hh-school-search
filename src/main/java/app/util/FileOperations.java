@@ -1,6 +1,6 @@
 package app.util;
 
-import app.Document;
+import app.structure.Document;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
