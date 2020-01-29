@@ -81,17 +81,35 @@ public class IndexerTest {
     public void indexerWithInverseIndexerTest() throws IndexerErrorException, IOException {
         indexerTestPrepare();
 
-        Index         idx = new Index(TEST_INDEX);
-        InverseIndex    inverseIndex = new InverseIndex(TEST_INDEX);
+        Index           idx             = new Index(TEST_INDEX);
+        InverseIndex    inverseIndex    = new InverseIndex(TEST_INDEX);
 
         idx.indexFile(TEST_FILE, inverseIndex);
-        inverseIndex.dump();
+        System.out.println("Total documents :"+idx.totalDocuments());
         inverseIndex.save();
+
+        System.out.println("Reading again ...");
+        Index           idx1             = new Index(TEST_INDEX);
+        InverseIndex    inverseIndex1    = new InverseIndex(TEST_INDEX);
+
+
+        System.out.println("Loaded documents :"+idx1.totalDocuments());
+
+        assertEquals(inverseIndex, inverseIndex1);
+
+        System.out.println("Indexing again");
+        idx1.indexFile(TEST_FILE, inverseIndex1);
+
+        System.out.println("Saving inverse index");
+        inverseIndex1.save();
+        System.out.println("Done");
+
+        System.out.println("Total documents :"+idx1.totalDocuments());
     }
 
     /*
-        0xFF FF FF =>       1111 1111 1111 1111 1111 1111
-                        '--87-''-- FF--''- FF --''- 7F -'
+        0xFF FF FF =>  0000 1111 1111 1111 1111 1111 1111
+                       '---87-''-- FF--''- FF --''- 7F -'
      */
     @Test
     public void varByteTest() {

@@ -89,7 +89,14 @@ public class Index {
                     // TODO: Added sharding support
                     throw new IndexerErrorException("Index file overflow. Please expand.");
                 }
-                int recordNumber = indexHeader.newRecord();
+                int recordNumber;
+                try {
+                    recordNumber =  indexHeader.newRecord();
+                } catch (Exception e) {
+                    // TODO: Add volume support
+                    System.out.println("Too many documents, some documents were ignored");
+                    break;
+                }
                 long documentNumber = recordNumber;
 
                 // TODO: Add some real document number
@@ -109,6 +116,13 @@ public class Index {
             throw new IndexerErrorException("Can't rewrite header");
         }
     }
+
+
+    public long totalDocuments() {
+        return indexHeader.totalRecords;
+
+    }
+
 }
 
 

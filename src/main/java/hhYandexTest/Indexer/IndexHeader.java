@@ -11,7 +11,7 @@ public class IndexHeader {
     /* FIX header size and serislize/deserialize in case of any changes below */
 
     public static final int VERSION = 0x00_00_00_01;   // v0.0.0.1
-    public int     totalRecords;
+    public long     totalRecords;
     byte[]  recordStatus;
     /* FIX */
 
@@ -19,9 +19,9 @@ public class IndexHeader {
     public static final int HEADER_SIZE = 4 + 4 + MAX_RECORDS / 8;
 
     public int newRecord() {
-        recordStatus[Integer.divideUnsigned(totalRecords, 8)] |= (1<<(totalRecords%8));
+        recordStatus[(int)(totalRecords>>>3)] |= (1<<(totalRecords & 0x7));
         totalRecords++;
-        return totalRecords - 1;
+        return (int)(totalRecords - 1);
     }
 
     void deleteRecord(int record) {
@@ -48,7 +48,7 @@ public class IndexHeader {
         ByteBuffer.allocate(HEADER_SIZE)
             .order(ByteOrder.BIG_ENDIAN)
                 .putInt(VERSION)
-                .putInt(totalRecords)
+                .putInt((int)totalRecords)
                 .put(recordStatus)
                 .rewind()
                 .get(serial);
@@ -66,23 +66,27 @@ public class IndexHeader {
         byte [] integer = new byte[4];
         byte [] recordStatus;
         int version = 0;
-        int totalRecords = 0;
+        long totalRecords = 0;
 
         f.readNBytes(integer, 0, integer.length);
-        for (byte b : integer)
-            version |= (version << 8) | b;
+        for (byte b : integer) {
+            version <<= 8;
+            version |= (b & 0xFF);
+        }
 
         if (version != VERSION)
             return null;
 
         f.readNBytes(integer, 0, integer.length);
-        for (byte b : integer)
-            totalRecords |= (totalRecords << 8) | b;
+        for (byte b : integer) {
+            totalRecords <<= 8;
+            totalRecords |= (b & 0xFF);
+        }
 
         recordStatus = new byte[MAX_RECORDS / 8];
         f.readNBytes(recordStatus, 0, recordStatus.length);
 
-        return new IndexHeader(totalRecords, recordStatus);
+        return new IndexHeader((int)totalRecords, recordStatus);
     }
 
 }

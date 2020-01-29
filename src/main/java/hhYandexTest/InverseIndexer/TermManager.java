@@ -34,7 +34,7 @@ public class TermManager {
 
         for (int n=0;n<4;n++, offset++) {
             numSegments <<= 8;
-            numSegments |= rawTermData[offset];
+            numSegments |= (rawTermData[offset] & 0xFF);
         }
 
         jumpTable = new TreeMap<>();
@@ -45,12 +45,12 @@ public class TermManager {
 
             for (int n=0;n<8; n++, offset++) {
                 segment <<= 8;
-                segment |= rawTermData[offset];
+                segment |= (rawTermData[offset] & 0xFF);
             }
 
             for (int n=0;n<4; n++, offset++) {
                 jumpOffset <<= 8;
-                jumpOffset |= rawTermData[offset];
+                jumpOffset |= (rawTermData[offset] & 0xFF);
             }
 
             jumpTable.put(segment, jumpOffset);
@@ -67,19 +67,22 @@ public class TermManager {
     public byte [] getRawData() {
 
         Set<Long> segments    = jumpTable.keySet();
-        int jumpTableSize       = 4 + (8 + 4) * segments.toArray().length;
+        int jumpTableSize       = 4 + (8 + 4) * segments.size();
         int resultLength        = jumpTableSize + docListSize;
         byte [] result          = new byte[resultLength];
 
         ByteBuffer resultBuffer = ByteBuffer
                 .allocate(resultLength)
                 .order(ByteOrder.BIG_ENDIAN)
-                .putInt(segments.toArray().length);
+                .putInt(segments.size());
 
-        for (Long segment : segments) {
+        Map.Entry<Long, Integer> iterator = jumpTable.firstEntry();
+
+        while (iterator != null) {
             resultBuffer
-                    .putLong(segment)
-                    .putInt(jumpTable.get(segment));
+                    .putLong(iterator.getKey())
+                    .putInt(iterator.getValue());
+            iterator = jumpTable.higherEntry(iterator.getKey());
         }
 
         resultBuffer

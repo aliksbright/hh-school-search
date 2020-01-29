@@ -54,7 +54,7 @@ public class InverseIndex implements BiConsumer<Long, String> {
      */
     public void save() throws IOException {
         RandomAccessFile    f;
-        Set<String>     terms;
+        Set<String>         terms;
 
         f = new RandomAccessFile(new File(indexDir, INVERSE_INDEX_FILE_NAME),"rw");
         terms = termMap.keySet();
@@ -68,7 +68,7 @@ public class InverseIndex implements BiConsumer<Long, String> {
 
 
             // Record size (will update later)
-            f.write(uIntBytes, 0, 4);
+            f.write(uIntBytes);
 
             // TermName size
             ByteBuffer.allocate(4)
@@ -76,7 +76,7 @@ public class InverseIndex implements BiConsumer<Long, String> {
                     .putInt(termNameBytes.length)
                     .rewind()
                     .get(uIntBytes);
-            f.write(uIntBytes, 0, 4);
+            f.write(uIntBytes);
 
             // TermName
             f.write(termNameBytes, 0, termNameBytes.length);
@@ -85,6 +85,7 @@ public class InverseIndex implements BiConsumer<Long, String> {
             byte [] termRawData = termManager.getRawData();
             f.write(termRawData, 0, termRawData.length);
 
+            // Update record size
             end = f.getFilePointer();
             f.seek(start);
 
@@ -93,7 +94,7 @@ public class InverseIndex implements BiConsumer<Long, String> {
                     .putInt((int) (end - start))
                     .rewind()
                     .get(uIntBytes);
-            f.write(uIntBytes, 0, 4);  // Will update record size later
+            f.write(uIntBytes);
             f.seek(end);
         }
 
@@ -136,6 +137,7 @@ public class InverseIndex implements BiConsumer<Long, String> {
             // Term Data
             termDataBuf = new byte[recordSize - 4 - 4 - termSize];
             f.read(termDataBuf);
+
             termMap.put(termName, new TermManager(termDataBuf));
         }
 
@@ -170,7 +172,7 @@ public class InverseIndex implements BiConsumer<Long, String> {
 
         for (int n=0;n< termList.length;n++) {
             if (termList[n].length() < 3)
-                return;
+                continue;
             addEntry(termList[n], docId, new byte [] {(byte)n});    /* Metadata now is just position */
         }
     }
@@ -191,10 +193,18 @@ public class InverseIndex implements BiConsumer<Long, String> {
             otherManager = that.termMap.get(term);
             thisManager = this.termMap.get(term);
 
-            if (Arrays.equals(thisManager.getRawData(), otherManager.getRawData()) == false)
+            byte [] thisRaw     = thisManager.getRawData();
+            byte [] otherRaw    = otherManager.getRawData();
+
+            if (Arrays.equals(thisRaw, otherRaw) == false)
                 return false;
         }
 
         return true;
+    }
+
+
+    public int totalTerms() {
+        return termMap.size();
     }
 }
