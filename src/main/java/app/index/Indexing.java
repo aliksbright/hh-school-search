@@ -1,30 +1,37 @@
 package app.index;
 
 import app.structure.Document;
+import app.structure.InvertedIndex;
+import app.structure.Term;
 import app.util.FileOperations;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Indexing {
     public static void runIndexing() {
         ArrayList<Document> docs = FileOperations.getDocsFromFile("./to_index.txt");
 
-        Map<String, Integer> termDocNumber = new HashMap<>();
-        Map<String, Integer> termPositionInDoc = new HashMap<>();
 
+    }
+
+    public HashMap<String, InvertedIndex> getInvertedIndex(List<Document> docs) {
+        HashMap<String, InvertedIndex> invIndex = new HashMap<>();
         for (int i = 0; i < docs.size(); i++) {
             Document doc = docs.get(i);
-            Map<String, Integer> termsAndPositions = doc.getTermsAndPositions();
-            for (String term : termsAndPositions.keySet()) {
-                termDocNumber.put(term, i);
-                termPositionInDoc.put(term, )
-
+            for (Term term : doc.getTerms()) {
+                InvertedIndex index = invIndex.getOrDefault(term.getValue(), null);
+                if (index == null) {
+                    invIndex.put(term.getValue(), new InvertedIndex(i, term.getPosition()));
+                } else {
+                    index.addDoc(i, term.getPosition());
+                }
             }
         }
-
-
+        return invIndex;
     }
 
 }
