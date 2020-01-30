@@ -15,7 +15,7 @@ public class Document {
     }
 
     private void setTerms () {
-        this.termsAndPositions = Indexer.removeStopWords(
+        this.terms = Indexer.removeStopWords(
                 Indexer.getTermsAndPositions(
                         Indexer.getTerms(this)
                 ), FileOperations.getLinesFromFile("stop_words.txt")
