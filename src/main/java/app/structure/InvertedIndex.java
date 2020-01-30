@@ -8,8 +8,10 @@ public class InvertedIndex {
     private List<Integer> positionsInDoc;
 
     public InvertedIndex(int docId, int positionInDoc) {
-        this.docIds = List.of(docId);
-        this.positionsInDoc = List.of(positionInDoc);
+        this.docIds = new ArrayList<>();
+        this.docIds.add(docId);
+        this.positionsInDoc = new ArrayList<>();
+        this.positionsInDoc.add(positionInDoc);
     }
 
     public List<Integer> getDocIds() {
