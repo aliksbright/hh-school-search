@@ -3,18 +3,18 @@ package app.structure;
 import app.index.Indexer;
 import app.util.FileOperations;
 
-import java.util.Map;
+import java.util.List;
 
 public class Document {
     private String primary;
-    private Map<String, Integer> termsAndPositions;
+    private List<Term> terms;
 
     public Document(String primary) {
         this.primary = primary;
-        setTermPosition();
+        setTerms();
     }
 
-    private void setTermPosition () {
+    private void setTerms () {
         this.termsAndPositions = Indexer.removeStopWords(
                 Indexer.getTermsAndPositions(
                         Indexer.getTerms(this)
@@ -26,8 +26,8 @@ public class Document {
         return primary;
     }
 
-    public Map<String, Integer> getTermsAndPositions() {
-        return termsAndPositions;
+    public List<Term> getTerms() {
+        return this.terms;
     }
 
 }

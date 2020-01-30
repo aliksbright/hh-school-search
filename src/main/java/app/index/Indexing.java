@@ -19,7 +19,7 @@ public class Indexing {
             Map<String, Integer> termsAndPositions = doc.getTermsAndPositions();
             for (String term : termsAndPositions.keySet()) {
                 termDocNumber.put(term, i);
-                // position
+                termPositionInDoc.put(term, )
 
             }
         }

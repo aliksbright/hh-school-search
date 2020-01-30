@@ -1,6 +1,8 @@
 package app.index;
 
 import app.structure.Document;
+import app.structure.Term;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,17 +18,18 @@ public class Indexer {
         return null;
     }
 
-    public static Map<String, Integer> getTermsAndPositions(List<String> terms) {
-            Map<String, Integer> termPosition = new HashMap<>();
-            for (int i = 0; i < terms.size(); i++) {
-                termPosition.put(terms.get(i), i);
-            }
+    public static List<Term> getTermsAndPositions(List<String> terms) {
+        List<Term> termPosition = new ArrayList<>();
+        for (int i = 0; i < terms.size(); i++) {
+            Term term = new Term(terms.get(i), i);
+            termPosition.add(term);
+        }
         return termPosition;
     }
 
-    public static Map<String, Integer> removeStopWords(Map<String, Integer> terms, ArrayList<String> stopWords) {
+    public static List<Term> removeStopWords(List<Term> terms, ArrayList<String> stopWords) {
         for (String word : stopWords) {
-                terms.remove(word);
+            terms.removeIf(term -> term.getValue().equals(word));
         }
         return terms;
     }
