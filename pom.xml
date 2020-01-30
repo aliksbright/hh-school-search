@@ -33,7 +33,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>Main</mainClass>
+                            <mainClass>Main.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -49,11 +49,4 @@
             </plugin>
         </plugins>
     </build>
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-queryparser</artifactId>
-            <version>8.3.1</version>
-        </dependency>
-    </dependencies>
 </project>

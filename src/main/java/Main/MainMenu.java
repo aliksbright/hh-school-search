@@ -1,11 +1,16 @@
+package Main;
+
+import Indexer.BuildIndex;
+import Searcher.Search;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 
-class MainMenu {
+public class MainMenu {
     private final BufferedReader bufferedReader;
 
-    MainMenu(BufferedReader bufferedReader) {
+    public MainMenu(BufferedReader bufferedReader) {
         this.bufferedReader = bufferedReader;
     }
 
@@ -15,7 +20,7 @@ class MainMenu {
         System.out.println("Выход из приложения    [3]");
     }
 
-    void start(){
+    public void start(){
         if (bufferedReader != null) {
             int key;
             do {
@@ -23,7 +28,7 @@ class MainMenu {
                 System.out.print("Введите номер меню: ");
                 try {
                     key = Integer.parseInt(bufferedReader.readLine());
-                } catch (IOException e) {
+                } catch (IOException | NumberFormatException e) {
                     key = 4;
                     System.out.println("Ошибка ввода номера меню...\n");
                 }
@@ -31,8 +36,14 @@ class MainMenu {
                     case 1:
                         try {
                             new BuildIndex(bufferedReader);
+                        } catch (AccessDeniedException e){
+                            System.out.println("Нет доступа к папке");
                         } catch (IOException e) {
+                            e.printStackTrace();
                             System.out.println("Ошибка ввода данных...\n");
+                        } catch (Exception e){
+                            e.printStackTrace();
+                            System.out.println("Ошибка...\n");
                         }
 
                         break;
