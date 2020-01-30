@@ -168,7 +168,7 @@ public class IndexerTest {
         req = new SearchRequest("hello");
         req.test();
 
-        req = new SearchRequest("(NOT abc) OR (world of fire)");
+        req = new SearchRequest("(NOT hello) OR (hello AND world)");
         req.test();
     }
 
@@ -198,6 +198,35 @@ public class IndexerTest {
         }
 
         assertFalse(answer.hasNext());
+    }
+
+    @Test
+    public void requestBuilderWithInverseIndexSyntaxTest() throws Exception {
+        indexerTestPrepare();
+
+        Index           idx             = new Index(TEST_INDEX);
+        InverseIndex    inverseIndex    = new InverseIndex(TEST_INDEX);
+
+        idx.indexFile(TEST_HELLO_WORLD_FILE, inverseIndex);
+
+        SearchRequest       req             = new SearchRequest("(NOT hello) OR (hello AND world)");
+        //Iterator<Integer>   answer          = List.of(2,3).stream().iterator();
+
+        req.setInverseIndex(inverseIndex);
+        req.setTotalDocsuments(idx.totalDocuments());
+        DocInfo doc = req.pull();
+
+        while (doc != null) {
+            //assertTrue(answer.hasNext());
+            //Integer next = answer.next();
+
+            System.out.println(doc.docId);
+            //assertTrue(doc.docId == next);
+
+            doc = req.pull();
+        }
+
+        //assertFalse(answer.hasNext());
     }
 
     @Test

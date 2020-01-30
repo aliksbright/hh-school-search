@@ -18,9 +18,9 @@ public class SearchNotEntry extends SearchEntry {
         }
 
         if (notDoc == null || docId < notDoc.docId) {
-            current     =  new DocInfo(docId, 0, 0, totalDocsuments);
+            current     =  new DocInfo(docId, 0, 0, totalDocuments);
             docId++;
-            if (docId >= totalDocsuments)
+            if (docId >= totalDocuments)
                 terminated = true;
             return current;
         }
@@ -31,7 +31,7 @@ public class SearchNotEntry extends SearchEntry {
                 notDoc = right.pull();
             docId++;
 
-            if (docId >= totalDocsuments) {
+            if (docId >= totalDocuments) {
                 terminated = true;
                 return null;
             }
@@ -40,10 +40,10 @@ public class SearchNotEntry extends SearchEntry {
                 break;
         }
 
-        current = new DocInfo(docId, 0, 0, totalDocsuments);
+        current = new DocInfo(docId, 0, 0, totalDocuments);
         docId++;
 
-        if (docId >= totalDocsuments)
+        if (docId >= totalDocuments)
             terminated = true;
 
         return current;

@@ -15,7 +15,7 @@ public class SearchEntry {
     InverseIndex    inverseIndex;
     DocInfo         current;
     boolean         terminated;
-    long            totalDocsuments;
+    long            totalDocuments;
 
 
     public SearchEntry() {
@@ -66,8 +66,12 @@ public class SearchEntry {
         this.inverseIndex = index;
     }
 
-    void setTotalDocsuments(long totalDocsuments) {
-        this.totalDocsuments = totalDocsuments;
+    void setTotalDocsuments(long totalDocuments) {
+        if (left != null)
+            left.setTotalDocsuments(totalDocuments);
+        if (right != null)
+            right.setTotalDocsuments(totalDocuments);
+        this.totalDocuments = totalDocuments;
     }
 
     public void test() {

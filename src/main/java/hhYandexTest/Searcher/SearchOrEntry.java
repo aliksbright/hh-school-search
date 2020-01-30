@@ -40,9 +40,6 @@ public class SearchOrEntry extends SearchEntry {
         if (masterDoc == null)
             swapMasterSlave();
 
-        //System.out.println("   Master term : " + masterEntry.term);
-        //System.out.println("   Slave  term : " + slaveEntry.term);
-
     }
 
     void swapMasterSlave() {
@@ -60,8 +57,9 @@ public class SearchOrEntry extends SearchEntry {
             return null;
         }
 
-        if (current == null)
+        if (current == null) {
             firstPull();
+        }
 
         if (slaveDoc == null) {
             current     = masterDoc;
