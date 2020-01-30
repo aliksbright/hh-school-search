@@ -4,6 +4,16 @@ hhYandex indexer
 Index some file and put results to specified directory:
     java -jar hh-yandex-1.0-SNAPSHOT.jar -i <index directory> <path to file>
 
+Search
+    java -jar hh-yandex-1.0-SNAPSHOT.jar -s <index directory> <query>
+
+Query language supports AND, OR, NOT and grouping with brackets.
+For example:
+    word1 OR word2 OR word3
+    (word1 OR word2) OR word3
+    (NOT (word1 OR word2)) AND word3
+
+
 
 Type definitions
 ~~~~~~~~~~~~~~~~

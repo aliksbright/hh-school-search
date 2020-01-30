@@ -15,6 +15,7 @@ public class TermManager {
     byte [] docList;                        // TODO: Array size is less than 2**32-1, so
     int     docListSize;                    // TODO: may require to switch to ArrayList
 
+    long    totalDocs;
     /*
         Default constructor
      */
@@ -22,6 +23,7 @@ public class TermManager {
         jumpTable = new TreeMap<>();
         docList = new byte[DOC_LIST_GROW];
         docListSize = 0;
+        totalDocs = 0;
     }
 
 
@@ -29,6 +31,8 @@ public class TermManager {
         Term constructor with initial data previously obtained with getRawData
      */
     public TermManager(byte [] rawTermData) {
+        this();
+
         int offset   = 0;
         int numSegments = 0;
 
@@ -233,7 +237,38 @@ public class TermManager {
 
         //System.out.println(" * Document added : " + docId + " in segment " + docSegment + " at position " + position);
         docListSize += growSize;
+        totalDocs++;
 
+    }
+
+    public DocInfo getDocInfo(int startPosition) {
+        int  position = startPosition;
+        long doc = 0;
+
+        while (position < docListSize) {
+            doc <<=7;
+            doc |= docList[position] & 0x7F;
+
+            if ((docList[position] & 0x80) == 0)
+                break;
+            position++;
+        }
+
+        if (position >= docListSize)
+            return  null;
+
+        position++;
+
+        //
+        // TODO: Here we should extract metadata correctly now it's just a stub
+        byte sz = docList[position];
+        int  termPosition;
+        if (sz == 1)
+            termPosition = docList[position+1];
+        else
+            termPosition = 0;
+
+        return new DocInfo(doc, termPosition, position - startPosition + 1 + sz, totalDocs);
     }
 
     public void add(byte [] document) {
@@ -241,3 +276,4 @@ public class TermManager {
     }
 
 }
+

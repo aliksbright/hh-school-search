@@ -2,23 +2,30 @@ package hhYandexTest;
 
 import hhYandexTest.Indexer.IndexHeader;
 import hhYandexTest.Indexer.Index;
+import hhYandexTest.InverseIndexer.DocInfo;
 import hhYandexTest.InverseIndexer.InverseIndex;
 import hhYandexTest.InverseIndexer.TermManager;
+import hhYandexTest.Searcher.SearchRequest;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Comparator;
+import java.util.*;
+import java.util.List;
 
 public class IndexerTest {
     static final String TEST_INDEX = "test-index";
     static final String TEST_FILE = "test-file.txt";
     static final String TEST_SHORT_FILE = "test-short-file.txt";
+    static final String TEST_HELLO_WORLD_FILE = "test-hello-world.txt";
+    static final String TEST_HELLO_NEAR_FILE = "hello-near-test.txt";
 
     @Test
     public void indexHeaderTest() {
@@ -152,6 +159,109 @@ public class IndexerTest {
         manager.add(new byte[] {25}, "Very long metadata to grow".getBytes(StandardCharsets.UTF_8));
         manager.add(new byte[] {(byte)0x80, 1}, "One more 1".getBytes(StandardCharsets.UTF_8));
         manager.dump();
+    }
+
+    @Test
+    public void requestBuilderTest() throws Exception {
+        SearchRequest req;
+
+        req = new SearchRequest("hello");
+        req.test();
+
+        req = new SearchRequest("(NOT abc) OR (world of fire)");
+        req.test();
+    }
+
+    @Test
+    public void requestBuilderWithInverseIndex() throws Exception {
+        indexerTestPrepare();
+
+        Index           idx             = new Index(TEST_INDEX);
+        InverseIndex    inverseIndex    = new InverseIndex(TEST_INDEX);
+
+        idx.indexFile(TEST_HELLO_WORLD_FILE, inverseIndex);
+
+        SearchRequest       req             = new SearchRequest("(daddy OR hello) AND (say OR when)");
+        Iterator<Integer>   answer          = List.of(2,3).stream().iterator();
+
+        req.setInverseIndex(inverseIndex);
+        DocInfo doc = req.pull();
+
+        while (doc != null) {
+            assertTrue(answer.hasNext());
+            Integer next = answer.next();
+
+            System.out.println(doc.docId + " vs " + next);
+            assertTrue(doc.docId == next);
+
+            doc = req.pull();
+        }
+
+        assertFalse(answer.hasNext());
+    }
+
+    @Test
+    public void requestBuilderWithNoAndIndex() throws Exception {
+        indexerTestPrepare();
+
+        Index           idx             = new Index(TEST_INDEX);
+        InverseIndex    inverseIndex    = new InverseIndex(TEST_INDEX);
+
+        idx.indexFile(TEST_HELLO_NEAR_FILE, inverseIndex);
+
+        SearchRequest       req             = new SearchRequest("dear friend");
+        req.setInverseIndex(inverseIndex);
+        req.setTotalDocsuments(idx.totalDocuments());
+        DocInfo doc = req.pull();
+
+        Iterator<Integer>   answer          = List.of(1,2).stream().iterator();
+
+        while (doc != null) {
+            assertTrue(answer.hasNext());
+            System.out.println(doc.docId);
+            assertTrue(doc.docId == answer.next());
+            doc = req.pull();
+        }
+        assertFalse(answer.hasNext());
+
+        req             = new SearchRequest("friend dear");
+        req.setInverseIndex(inverseIndex);
+        req.setTotalDocsuments(idx.totalDocuments());
+        doc = req.pull();
+
+        assertNull(doc);
+    }
+
+    @Test
+    public void requestBuilderWithInverseIndexAndDocumentOutput() throws Exception {
+        indexerTestPrepare();
+
+        Index           idx             = new Index(TEST_INDEX);
+        InverseIndex    inverseIndex    = new InverseIndex(TEST_INDEX);
+
+        idx.indexFile(TEST_HELLO_WORLD_FILE, inverseIndex);
+
+        SearchRequest       req         = new SearchRequest("(daddy OR world)");
+        Iterator<String>    answer      = List.of(
+                "0 hello, dear world",
+                "2 say hello to daddy",
+                "3 when the world says hello to you",
+                "4 welcome to the real world") .stream().iterator();
+        req.setInverseIndex(inverseIndex);
+        DocInfo doc = req.pull();
+
+        while (doc != null) {
+            String docText = idx.find(doc.docId);
+
+            assertNotNull(docText);
+            assertTrue(answer.hasNext());
+
+            System.out.println(doc.docId + " " + docText);
+            assertEquals(docText, answer.next());
+            doc = req.pull();
+        }
+
+        assertFalse(answer.hasNext());
     }
 
 }

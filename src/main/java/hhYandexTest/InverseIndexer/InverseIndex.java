@@ -177,6 +177,12 @@ public class InverseIndex implements BiConsumer<Long, String> {
         }
     }
 
+    public TermManager getTermManager(String term) {
+        if (termMap.containsKey(term))
+            return termMap.get(term);
+        return null;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

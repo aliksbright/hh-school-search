@@ -11,8 +11,8 @@ public class IndexHeader {
     /* FIX header size and serislize/deserialize in case of any changes below */
 
     public static final int VERSION = 0x00_00_00_01;   // v0.0.0.1
-    public long     totalRecords;
-    byte[]  recordStatus;
+    public long             totalRecords;
+    byte[]                  recordStatus;
     /* FIX */
 
     public static final int MAX_RECORDS = 1024 * 1024; /* 2**20 records per file*/
@@ -28,6 +28,10 @@ public class IndexHeader {
         if (record >= totalRecords)
             return;
         recordStatus[Integer.divideUnsigned(record,8)] &= ~(1<<(record%8));
+    }
+
+    boolean isAltered(int record) {
+        return (recordStatus[Integer.divideUnsigned(record,8)] & (1<<(record%8))) == 0;
     }
 
     public IndexHeader() {

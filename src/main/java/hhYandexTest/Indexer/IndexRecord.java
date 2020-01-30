@@ -42,7 +42,7 @@ class IndexRecord {
         return serial;
     }
 
-    public static IndexRecord fromFile(FileInputStream f) throws IOException {
+    public static IndexRecord fromFile(RandomAccessFile f) throws IOException {
         byte [] integer = new byte[4];
         byte [] longInt = new byte[8];
         byte [] text;
@@ -50,20 +50,20 @@ class IndexRecord {
         int recordNumber = 0;
         long documentNumber = 0;
 
-        f.readNBytes(integer, 0, integer.length);
+        f.read(integer);
         for (byte n : integer)
-            recordSize |= (recordSize <<8) | n;
+            recordSize |= (recordSize <<8) | (n & 0xFF);
 
-        f.readNBytes(integer, 0, integer.length);
+        f.read(integer);
         for (byte n : integer)
-            recordNumber |= (recordNumber <<8) | n;
+            recordNumber |= (recordNumber <<8) | (n & 0xFF);
 
-        f.readNBytes(longInt, 0, longInt.length);
+        f.read(longInt);
         for (byte n : longInt)
-            documentNumber |= (documentNumber <<8) | n;
+            documentNumber |= (documentNumber <<8) | (n & 0xFF);
 
         text = new byte[recordSize - 4 - 4 -8];
-        f.readNBytes(text, 0, text.length);
+        f.read(text);
 
         return new IndexRecord(recordNumber, documentNumber, text);
     }

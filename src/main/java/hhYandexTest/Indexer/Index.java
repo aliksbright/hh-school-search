@@ -12,8 +12,9 @@ import java.util.function.BiConsumer;
 public class Index {
     static final String INDEX_FILE_NAME="index.bin";
     IndexHeader indexHeader;
-    Path indexPath;
-    File indexFile;
+    Path        indexPath;
+    File        indexFile;
+
 
     public Index(String indexDirName) throws IndexerErrorException {
 
@@ -25,7 +26,6 @@ public class Index {
 
         if (indexFile.exists()) {
             FileInputStream fin;
-            System.out.println("Reading index file header");
 
             try {
                 fin = new FileInputStream(indexFile);
@@ -60,8 +60,8 @@ public class Index {
     }
 
     public void indexFile(String documentFile, BiConsumer<Long, String> inverseIndexer) throws IndexerErrorException {
-        RandomAccessFile fout;
-        BufferedReader fin ;
+        RandomAccessFile    fout;
+        BufferedReader      fin ;
 
 
         try {
@@ -121,6 +121,35 @@ public class Index {
     public long totalDocuments() {
         return indexHeader.totalRecords;
 
+    }
+
+    public String find(long docId) throws IOException {
+        IndexRecord         r = null;
+        RandomAccessFile    searchFile = null;
+
+        searchFile = new RandomAccessFile(indexFile, "r");
+        searchFile.seek(IndexHeader.HEADER_SIZE);
+
+        while (searchFile.getFilePointer() < searchFile.length()) {
+            try {
+                r = IndexRecord.fromFile(searchFile);
+            } catch (Exception e) {
+                searchFile.close();
+                return null;
+            }
+
+            if (indexHeader.isAltered(r.recordNumber))
+                continue;
+
+            if (r.documentNumber == docId)
+                break;
+        }
+
+        searchFile.close();
+        if (r == null)
+            return null;
+
+        return new String(r.text, StandardCharsets.UTF_8);
     }
 
 }
