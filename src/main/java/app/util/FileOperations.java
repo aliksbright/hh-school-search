@@ -1,11 +1,11 @@
 package app.util;
 
 import app.structure.Document;
+import app.structure.TermInv;
+import app.structure.InvertedIndex;
+import com.google.gson.Gson;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 
 public class FileOperations {
@@ -33,5 +33,47 @@ public class FileOperations {
             e.printStackTrace();
         }
         return lines;
+    }
+
+    public static void invIndexToJson(InvertedIndex invIndex, String filename) {
+        Gson gson = new Gson();
+        File file = new File(filename);
+
+        InvertedIndex old = null;
+        FileReader fr;
+        BufferedReader bReader;
+
+        String jsonInvIndex = "";
+
+        if (file.canRead()) {
+            try {
+                fr = new FileReader(file);
+                bReader = new BufferedReader(fr);
+                old = gson.fromJson(bReader.readLine(), InvertedIndex.class);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            for (String term : invIndex.invIndex.keySet()) {
+                TermInv termInv = old.invIndex.getOrDefault(term, null);
+                if (termInv == null) {
+                    old.invIndex.put(term, invIndex.invIndex.get(term));
+                } else {
+                    old.invIndex.get(term).addAllDocs(invIndex.invIndex.get(term).getDocIds(), invIndex.invIndex.get(term).getPositionInDoc());
+                }
+            }
+            jsonInvIndex = gson.toJson(old);
+
+        } else {
+            jsonInvIndex = gson.toJson(invIndex);
+        }
+
+        try {
+            FileWriter fw = new FileWriter(file);
+            fw.write(jsonInvIndex);
+            fw.flush();
+            fw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
