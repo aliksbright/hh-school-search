@@ -3,11 +3,11 @@ package app.structure;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Index {
+public class TermInv {
     private List<Integer> docIds;
     private List<Integer> positionsInDoc;
 
-    public Index(int docId, int positionInDoc) {
+    public TermInv(int docId, int positionInDoc) {
         this.docIds = new ArrayList<>();
         this.docIds.add(docId);
         this.positionsInDoc = new ArrayList<>();
