@@ -7,13 +7,13 @@
 
 Запуск:
 
-cd <path to project>
+cd \<path to project\>
 
-mvn clean compile assembly:single
+mvn clean test compile assembly:single
 
-java -jar target/search-1.0-SNAPSHOT-jar-with-dependencies.jar -i <path to index file> <path to file for indexing>
+java -jar target/search-1.0-SNAPSHOT-jar-with-dependencies.jar -i \<path to index file\> \<path to file for indexing\>
 
-java -jar target/search-1.0-SNAPSHOT-jar-with-dependencies.jar -s <path to index file> <search request>
+java -jar target/search-1.0-SNAPSHOT-jar-with-dependencies.jar -s \<path to index file\> \<search request\>
 ## Дз по поиску 
 
 Реализовать свой простой поиск на java, который может работать в 2 режимах: 

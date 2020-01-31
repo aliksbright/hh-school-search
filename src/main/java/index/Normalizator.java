@@ -8,6 +8,10 @@ import java.util.stream.Collectors;
 
 public class Normalizator {
 
+    public Normalizator() {
+
+    }
+
     public static Map<String, String> normalizeStrings(Path originFile) throws IOException {
         return Files.lines(originFile)
                 // фультруем от пустых строк

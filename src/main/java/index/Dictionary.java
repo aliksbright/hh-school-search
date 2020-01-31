@@ -7,6 +7,10 @@ public class Dictionary implements Serializable {
     private static final long serialVersionUID = 1L;
     private Map<String, Set<String>> termDictionary = new HashMap<>(300);
 
+    public Dictionary() {
+
+    }
+
     public void put(Map<String, String> allLines) {
         for(Map.Entry<String, String> entry : allLines.entrySet())
             put(entry.getKey(), entry.getValue());
