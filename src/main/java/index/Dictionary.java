@@ -1,4 +1,4 @@
-package pisarev.index;
+package index;
 
 import java.io.*;
 import java.util.*;
