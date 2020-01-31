@@ -4,8 +4,6 @@ import java.util.stream.Collectors;
 
 public class Main {
 
-    private static Map<String, HashSet<Integer>> indexTerms = new HashMap<>();
-    private static Map<Integer, String> indexDocs = new HashMap<>();
     private static Map<String, HashSet<String>> finalIndex = new HashMap<>();
 
     private static List<String> stopWords = Arrays.asList("a", "able", "about",
@@ -27,43 +25,36 @@ public class Main {
     private static List<String> punctuationMarks = Arrays.asList(",", ".", "?", ":", "!");
 
     public static void main(String[] args) {
-        switch (args[0]) {
-            case "INDEX":
-                if (args.length < 3) {
-                    System.out.println("The error occurs... You've entered less arguments than required\n" +
+        if (args.length < 3) {
+            System.out.println("The error occurs... You've entered less arguments than required\n" +
+                    "For INDEX mode enter: java -jar hh-search-1.0-SNAPSHOT.jar INDEX path-to-index-file path-to-source-file\n" +
+                    "For SEARCH mode enter: java -jar hh-search-1.0-SNAPSHOT.jar SEARCH path-to-index-file search-query\n" +
+                    "Try again.");
+        } else {
+            switch (args[0]) {
+                case "INDEX":
+                    try {
+                        index(args[1], args[2]);
+                    } catch (IOException e) {
+                        System.out.println("The error occurs... Maybe you've entered incorrect path for source file?");
+                    }
+                    break;
+                case "SEARCH":
+                    ArrayList<String> queryArgs = new ArrayList<>();
+                    queryArgs.addAll(Arrays.asList(args).subList(2, args.length));
+                    try {
+                        search(args[1], queryArgs);
+                    } catch (IOException e) {
+                        System.out.println("The error occurs... Maybe you've entered incorrect path for index file?");
+                    }
+                    break;
+                default:
+                    System.out.println("There are only 2 modes in this program\n" +
                             "For INDEX mode enter: java -jar hh-search-1.0-SNAPSHOT.jar INDEX path-to-index-file path-to-source-file\n" +
                             "For SEARCH mode enter: java -jar hh-search-1.0-SNAPSHOT.jar SEARCH path-to-index-file search-query\n" +
                             "Try again.");
                     break;
-                }
-                try {
-                    index(args[1], args[2]);
-                } catch (IOException e) {
-                    System.out.println("The error occurs... Maybe you've entered incorrect path for source file?");
-                }
-                break;
-            case "SEARCH":
-                if (args.length < 3) {
-                    System.out.println("The error occurs... You forgot to enter any arguments\n" +
-                            "For INDEX mode enter: java -jar hh-search-1.0-SNAPSHOT.jar INDEX path-to-index-file path-to-source-file\n" +
-                            "For SEARCH mode enter: java -jar hh-search-1.0-SNAPSHOT.jar SEARCH path-to-index-file search-query\n" +
-                            "Try again.");
-                    break;
-                }
-                ArrayList<String> queryArgs = new ArrayList<>();
-                queryArgs.addAll(Arrays.asList(args).subList(2, args.length));
-                try {
-                    search(args[1], queryArgs);
-                } catch (IOException e) {
-                    System.out.println("The error occurs... Maybe you've entered incorrect path for index file?");
-                }
-                break;
-            default:
-                System.out.println("There are only 2 modes in this program\n" +
-                        "For INDEX mode enter: java -jar hh-search-1.0-SNAPSHOT.jar INDEX path-to-index-file path-to-source-file\n" +
-                        "For SEARCH mode enter: java -jar hh-search-1.0-SNAPSHOT.jar SEARCH path-to-index-file search-query\n" +
-                        "Try again.");
-                break;
+            }
         }
     }
 
