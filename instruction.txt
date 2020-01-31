@@ -1,0 +1,3 @@
+mvn clean compile assembly:single
+java -jar target/search-1.0-SNAPSHOT-jar-with-dependencies.jar -i <path to index file> <path to file for indexing>
+java -jar target/search-1.0-SNAPSHOT-jar-with-dependencies.jar -s <path to index file> <search request>

@@ -1,3 +1,5 @@
+package mainClass;
+
 import index.Index;
 import index.Dictionary;
 import index.Normalizator;
@@ -13,7 +15,6 @@ import java.util.*;
 import static java.nio.file.attribute.PosixFilePermission.OWNER_READ;
 import static java.nio.file.attribute.PosixFilePermission.OWNER_WRITE;
 
-
 public class Main {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         if (args.length == 3 && (args[0].equals("-i") || args[0].equals("-s"))) {
@@ -24,14 +25,14 @@ public class Main {
             index.readFromIndex();
 
             // создаем словарь или загружаем уже имеющийся (словарь должен находиться в той же папке, что и индекс)
-            Path dict = Paths.get(args[1].replaceAll("\\/(?:.(?!\\/))+$", "/dictionary"));
+            String dict = args[1].replaceAll("\\/(?:.(?!\\/))+$", "/dictionary");
             Dictionary dictionary;
-            if (Files.isRegularFile(dict)) {
-                ObjectInputStream ois = new ObjectInputStream(new FileInputStream(dict.toString()));
+            if (Files.isRegularFile(Paths.get(dict))) {
+                ObjectInputStream ois = new ObjectInputStream(new FileInputStream(dict));
                 dictionary = (Dictionary) ois.readObject();
                 ois.close();
             } else {
-                dictionary = new Dictionary(dict);
+                dictionary = new Dictionary();
             }
 
             //индексация
@@ -45,8 +46,9 @@ public class Main {
                     ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(dict.toString()));
                     oos.writeObject(dictionary);
                     oos.close();
+                    System.out.println("Indexing is finished!");
                 } else {
-                    System.out.println("File for indexing not found!\n");
+                    System.out.println("File for indexing not found!");
                 }
             // поиск
             } else {
@@ -56,8 +58,8 @@ public class Main {
 
         } else {
             System.out.println("Wrong arguments!\nUsage:\n" +
-                    "<-i> <path to index file> <path to file for indexing>\n" +
-                    "<-s> <path to index file> <search request>\n");
+                    "-i <path to index file> <path to file for indexing>\n" +
+                    "-s <path to index file> <search request>");
         }
     }
 
