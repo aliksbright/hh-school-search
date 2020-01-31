@@ -13,7 +13,7 @@ java -jar search-task-*.jar -d thalesoftwocities.txt -i index.dat
 
 ```shell
 java -jar search-task-*.jar -i index.dat -q two
-```python
+```
 
 Реализовать свой простой поиск на java, который может работать в 2 режимах: 
 
