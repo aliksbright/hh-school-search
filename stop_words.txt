@@ -4,7 +4,6 @@ about
 all
 am
 an
-and
 any
 are
 as
@@ -28,11 +27,9 @@ it
 me
 my
 no
-not
 of
 on
 one
-or
 so
 that
 the
