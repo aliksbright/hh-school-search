@@ -38,5 +38,9 @@
 6. Соотнести полученный результат, с тем что указано в пп. 3.1 или 3.2 в строке **на выходе**.
 
 # Что реализовано на данный момент?
-* Базовый режим работы программы, поддерживающий поиск по одному слову
-=======
+* Поиск по одному слову (`java -jar hh-search-1.0-SNAPSHOT.jar SEARCH path-to-index-file word`)
+* Поиск по одной фразе (`java -jar hh-search-1.0-SNAPSHOT.jar SEARCH path-to-index-file "my phrase"`)
+* Логический поиск по двум операндам и оператору AND (`java -jar hh-search-1.0-SNAPSHOT.jar SEARCH path-to-index-file word AND world`)
+* Логический поиск по двум операндам и оператору OR (`java -jar hh-search-1.0-SNAPSHOT.jar SEARCH path-to-index-file word OR world`)
+* Логический поиск по двум операндам и оператору NOT (`java -jar hh-search-1.0-SNAPSHOT.jar SEARCH path-to-index-file word NOT world`)
+* Обработка ошибок и некорректных данных от пользователя
