@@ -9,7 +9,7 @@ import java.util.List;
 public class Indexer {
 
     public static List<String> getTerms(Document doc) {
-        return List.of(doc.getPrimary().split("[\\s,;:.!?/]"));
+        return List.of(doc.getPrimary().toLowerCase().split("[\\s,;:.!?/]"));
     }
 
     public static List<String> getLemmatizedTerms(List<String> terms) {

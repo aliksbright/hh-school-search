@@ -2,7 +2,6 @@ package app.index;
 
 import app.structure.Document;
 import app.structure.TermInv;
-import app.structure.InvertedIndex;
 import app.structure.Term;
 import app.util.FileOperations;
 
@@ -17,7 +16,6 @@ public class Indexing {
         HashMap<String, TermInv> invIndex = getInvertedIndex(docs);
 
         FileOperations.invIndexToJson(invIndex, "inv_index.json");
-
     }
 
     public static HashMap<String, TermInv> getInvertedIndex(List<Document> docs) {
