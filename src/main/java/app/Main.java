@@ -1,6 +1,7 @@
 package app;
 
 import app.index.Indexing;
+import app.search.Searching;
 
 import java.util.Scanner;
 
@@ -15,7 +16,7 @@ public class Main {
                 Indexing.runIndexing();
                 break;
             } else if (mode.equals("search") || mode.equals("s")) {
-
+                Searching.runSearching();
                 break;
             } else {
                 System.out.println("Incorrect work mode");
