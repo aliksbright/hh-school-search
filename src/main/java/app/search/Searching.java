@@ -33,8 +33,7 @@ public class Searching {
     }
 
     public static void printRequestedDocs(Set<Integer> requestedDocs) {
-        HashSet<Integer> sortedDocs = (HashSet<Integer>) requestedDocs;
-        if (sortedDocs.contains(-1)) {
+        if (requestedDocs.contains(-1)) {
             System.out.println("Nothing found");
         } else {
             List<String> stringDocs = new ArrayList<>();
