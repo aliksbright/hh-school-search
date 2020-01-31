@@ -128,4 +128,14 @@ public class SearchTest {
         List<Integer> actual = search.andNotSearch().stream().map(Document::getLineId).collect(Collectors.toList());
         assertEquals(List.of(7), actual);
     }
+
+    @Test
+    public void whenPhraseSearch() {
+        Search search = new Search(this.index, "менеджер \"учитель школа завуч химии\" it");
+        search.createInvIndex();
+        assertEquals(
+                List.of(8),
+                search.phraseSearch().stream().map(Document::getLineId).collect(Collectors.toList())
+        );
+    }
 }

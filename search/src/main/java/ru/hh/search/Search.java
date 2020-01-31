@@ -1,10 +1,12 @@
 package ru.hh.search;
 
+import java.lang.reflect.Array;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static ru.hh.search.Util.getTokens;
+import static ru.hh.search.Util.*;
 
 /**
  * Поиск по инвертированному индексу.
@@ -89,6 +91,39 @@ public class Search {
         ).filter(doc -> notPos.stream().noneMatch(
                 pos -> doc.getTermsStringSet().contains(tokens.get(pos + 1))
         )).collect(Collectors.toSet());
+    }
+
+    public Set<Document> phraseSearch() {
+        List<String> tokens = getTokens(this.query);
+        int strt = 0;
+        int end = 0;
+        for (int pos = 0; pos < tokens.size(); ++pos) {
+            if (tokens.get(pos).startsWith("\"")) {
+                strt = pos;
+                tokens.set(pos, tokens.get(pos).replaceAll("\"", ""));
+            } else if (tokens.get(pos).endsWith("\"")) {
+                end = pos;
+                tokens.set(pos, tokens.get(pos).replaceAll("\"", ""));
+            }
+        }
+        List<String> tokens2 = Arrays.stream(tokens.toArray(), strt, end + 1)
+                .map(Object::toString).collect(Collectors.toList());
+        this.query = String.join(" ", tokens2);
+        return andNotSearch().stream().filter(doc -> {
+            List<Term> terms = doc.getTerms().stream()
+                    .filter(term -> tokens2.contains(term.getValue()))
+                    .collect(Collectors.toList());
+            boolean ok = true;
+            for (int pos = 0; pos < terms.size() - 1; ++pos) {
+                if (terms.get(pos + 1).getPosition() - terms.get(pos).getPosition() != 1
+                || !tokens2.get(pos).equals(terms.get(pos).getValue())
+                ) {
+                    ok = false;
+                    break;
+                }
+            }
+            return ok;
+        }).collect(Collectors.toSet());
     }
 
 }

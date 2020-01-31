@@ -33,7 +33,9 @@ public class ConsoleSearcher implements Action {
             Search search = new Search(Paths.get(args[1]), query);
             search.createInvIndex();
             Map<Integer, String> result;
-            if (andNot(this.query)) {
+            if (this.query.contains("\"")) {
+                result = search.pSearch(search.phraseSearch());
+            } else if (andNot(this.query)) {
                 result = search.pSearch(search.andNotSearch());
             } else {
                 result = search.pSearch(search.search());

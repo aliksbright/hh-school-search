@@ -25,9 +25,9 @@ public class Util {
     public static List<String> getTokens(String line) {
         Set<String> preps = Set.of("по", "на", "в", "с", "к", "у", "над","под", "перед", "при", "для", "во");
         return Arrays.stream(line.split(" "))
-                .map(token -> token.replaceAll("[^a-zA-Zа-яА-Я+]", ""))
-                .filter(token -> !preps.contains(token))
                 .map(String::toLowerCase)
+                .map(token -> token.replaceAll("[^a-zA-Zа-яА-Я+\"]", ""))
+                .filter(token -> !preps.contains(token))
                 .collect(Collectors.toList());
     }
 
