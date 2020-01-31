@@ -18,6 +18,7 @@ public class Dictionary implements Serializable {
             put(entry.getKey(), entry.getValue());
     }
 
+    // разбиваем строку на токены, каждому токену присваиваем множество id документов из индекса
     private void put(String id, String value) {
         String[] tokens = value.split("\\s");
         for (String token : tokens) {
