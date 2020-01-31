@@ -4,10 +4,7 @@ import app.structure.TermInv;
 import app.util.FileOperations;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Searching {
     public static void runSearching() {
@@ -25,20 +22,27 @@ public class Searching {
 
         HashMap<String, TermInv> invIndex = FileOperations.jsonToInvIndex(indexFile);
 
-        List<Integer> requestedDocs = getRequestedDocs(invIndex, query);
+        Set<Integer> requestedDocs = getRequestedDocs(invIndex, query);
 
         printRequestedDocs(requestedDocs);
     }
 
-    public static List<Integer> getRequestedDocs(HashMap<String, TermInv> invIndex, String query) {
-        return null;
+    public static Set<Integer> getRequestedDocs(HashMap<String, TermInv> invIndex, String query) {
+        Searcher searcher = new Searcher(query, invIndex);
+        return searcher.getRequestedDocs();
     }
 
-    public static void printRequestedDocs(List<Integer> requestedDocs) {
-        List<String> stringDocs = new ArrayList<>();
-        for (int id : requestedDocs) {
-            stringDocs.add(String.valueOf(id));
+    public static void printRequestedDocs(Set<Integer> requestedDocs) {
+        HashSet<Integer> sortedDocs = (HashSet<Integer>) requestedDocs;
+        if (sortedDocs.contains(-1)) {
+            System.out.println("Nothing found");
+        } else {
+            List<String> stringDocs = new ArrayList<>();
+            for (int id : requestedDocs) {
+                stringDocs.add(String.valueOf(id));
+            }
+            System.out.println("Requested document ids:");
+            System.out.println(String.join(", ", stringDocs));
         }
-        System.out.println(String.join(", ", stringDocs));
     }
 }
