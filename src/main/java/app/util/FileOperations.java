@@ -52,4 +52,20 @@ public class FileOperations {
             e.printStackTrace();
         }
     }
+
+    public HashMap<String, TermInv> jsonToInvIndex(String filename) {
+        Gson gson = new Gson();
+        File file = new File(filename);
+
+        String jsonIndex = null;
+        try {
+            FileReader fr = new FileReader(file);
+            BufferedReader bReader = new BufferedReader(fr);
+            jsonIndex = bReader.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return gson.fromJson(jsonIndex, InvertedIndex.class).invIndex;
+    }
 }
