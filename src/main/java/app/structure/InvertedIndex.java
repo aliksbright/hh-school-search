@@ -26,4 +26,9 @@ public class InvertedIndex {
         this.docIds.add(docId);
         this.positionsInDoc.add(positionInDoc);
     }
+
+    public void addAllDocs(List<Integer> docIds, List<Integer> positionsInDoc) {
+        this.docIds.addAll(docIds);
+        this.positionsInDoc.addAll(positionsInDoc);
+    }
 }
