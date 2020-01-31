@@ -53,7 +53,7 @@ public class FileOperations {
         }
     }
 
-    public HashMap<String, TermInv> jsonToInvIndex(String filename) {
+    public static HashMap<String, TermInv> jsonToInvIndex(String filename) {
         Gson gson = new Gson();
         File file = new File(filename);
 
