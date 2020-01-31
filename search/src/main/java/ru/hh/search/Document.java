@@ -3,6 +3,7 @@ package ru.hh.search;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -41,6 +42,10 @@ public class Document {
 
     public List<String> getTermsString() {
         return this.terms.stream().map(Term::toString).collect(Collectors.toList());
+    }
+
+    public Set<String> getTermsStringSet() {
+        return this.terms.stream().map(Term::toString).collect(Collectors.toSet());
     }
 
     @Override

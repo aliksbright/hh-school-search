@@ -51,8 +51,8 @@ public class Search {
      * но вывод получается такой: id - строка из индекса, с подсвеченными найденными словами.
      * @return словарь.
      */
-    public Map<Integer, String> pSearch() {
-        return search().stream().collect(Collectors.toMap(Document::getLineId, this::pString));
+    public Map<Integer, String> pSearch(Set<Document> documents) {
+        return documents.stream().collect(Collectors.toMap(Document::getLineId, this::pString));
     }
 
     /**
@@ -65,6 +65,30 @@ public class Search {
         return document.getTermsString().stream()
                 .map(word -> terms.contains(word) ? word.toUpperCase() : word)
                 .collect(Collectors.joining(" "));
+    }
+
+    public Set<Document> andNotSearch() {
+        List<String> tokens = getTokens(this.query);
+        List<Integer> andPos = new ArrayList<>();
+        List<Integer> notPos = new ArrayList<>();
+        for (int pos = 1; pos < tokens.size() - 1; ++pos) {
+            if ("and".equals(tokens.get(pos))) {
+                andPos.add(pos);
+            }
+        }
+        for (int pos = 0; pos < tokens.size() - 1; ++pos) {
+            if ("not".equals(tokens.get(pos))) {
+                notPos.add(pos);
+            }
+        }
+        Set<Document> docs = search();
+        return docs.stream().filter(doc -> andPos.stream().allMatch(
+                pos -> doc.getTermsStringSet().contains(tokens.get(pos - 1))
+                        && doc.getTermsStringSet().contains(tokens.get(pos + 1))
+                )
+        ).filter(doc -> notPos.stream().noneMatch(
+                pos -> doc.getTermsStringSet().contains(tokens.get(pos + 1))
+        )).collect(Collectors.toSet());
     }
 
 }

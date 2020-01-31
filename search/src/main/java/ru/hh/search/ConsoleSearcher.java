@@ -5,7 +5,7 @@ import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Scanner;
 
-import static ru.hh.search.Util.pathChecker;
+import static ru.hh.search.Util.*;
 
 /**
  * Консольный поисковик.
@@ -32,12 +32,21 @@ public class ConsoleSearcher implements Action {
             this.query = scanner.nextLine();
             Search search = new Search(Paths.get(args[1]), query);
             search.createInvIndex();
-            Map<Integer, String> result = search.pSearch();
+            Map<Integer, String> result;
+            if (andNot(this.query)) {
+                result = search.pSearch(search.andNotSearch());
+            } else {
+                result = search.pSearch(search.search());
+            }
             StringBuilder sb = new StringBuilder();
             result.forEach((id, str) -> sb.append(id).append(" - ").append(str).append(System.lineSeparator()));
             System.out.println(sb.toString());
         } catch (IndexOutOfBoundsException | FileNotFoundException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    private boolean andNot(String query) {
+        return getTokens(query).stream().anyMatch(token -> "and".equals(token) | "not".equals(token));
     }
 }

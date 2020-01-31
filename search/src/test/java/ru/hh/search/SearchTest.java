@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -25,6 +26,9 @@ public class SearchTest {
             .add("<document documentId=\"4\" lineId=\"4\">слесарь/ремонтник</document>")
             .add("<document documentId=\"5\" lineId=\"5\">администратор/конгресс/центр</document>")
             .add("<document documentId=\"6\" lineId=\"6\">технический/специалист/конгресс/центр</document>")
+            .add("<document documentId=\"7\" lineId=\"7\">учитель/классрук/химии/школа</document>")
+            .add("<document documentId=\"8\" lineId=\"8\">учитель/школа/завуч/химии</document>")
+            .add("<document documentId=\"9\" lineId=\"9\">учитель/математики/завуч</document>")
             .add("</documents>");
 
     @Before
@@ -69,7 +73,7 @@ public class SearchTest {
     public void whenPSearch() {
         Search search = new Search(this.index, "java it java ремонтник");
         search.createInvIndex();
-        Map<Integer, String> result = search.pSearch();
+        Map<Integer, String> result = search.pSearch(search.search());
         Map<Integer, String> expected = new HashMap<>(
                 Map.of(1, "JAVA разработчик IT компанию",
                         2, "manager продаж IT компанию",
@@ -82,7 +86,7 @@ public class SearchTest {
     public void whenQueryNotExistThen() {
         Search search = new Search(this.index, "");
         search.createInvIndex();
-        assertEquals(new HashMap<Integer, String>(), search.pSearch());
+        assertEquals(new HashMap<Integer, String>(), search.pSearch(search.search()));
     }
 
     @Test
@@ -90,5 +94,38 @@ public class SearchTest {
         Search search = new Search(this.index, "дворник джаз");
         search.createInvIndex();
         assertEquals(new HashSet<Document>(), search.search());
+    }
+
+    @Test
+    public void whenAndNotSearch() {
+        Search search = new Search(this.index, "учитель and химии");
+        search.createInvIndex();
+        List<Integer> actual = search.andNotSearch().stream().map(Document::getLineId).collect(Collectors.toList());
+        assertEquals(List.of(7, 8), actual);
+    }
+
+    @Test
+    public void whenAndNotSearchNotExist() {
+        Search search = new Search(this.index, "учитель and химии and c++");
+        search.createInvIndex();
+        search.andNotSearch().forEach(el -> System.out.println(el.getLineId()));
+        List<Integer> actual = search.andNotSearch().stream().map(Document::getLineId).collect(Collectors.toList());
+        assertEquals(List.of(), actual);
+    }
+
+    @Test
+    public void whenAndNotSearchWithNot() {
+        Search search = new Search(this.index, "учитель and химии not завуч");
+        search.createInvIndex();
+        List<Integer> actual = search.andNotSearch().stream().map(Document::getLineId).collect(Collectors.toList());
+        assertEquals(List.of(7), actual);
+    }
+
+    @Test
+    public void whenAndNotSearchWithNotAndOtherWords() {
+        Search search = new Search(this.index, "учитель and химии java not завуч слесарь гпгп");
+        search.createInvIndex();
+        List<Integer> actual = search.andNotSearch().stream().map(Document::getLineId).collect(Collectors.toList());
+        assertEquals(List.of(7), actual);
     }
 }
