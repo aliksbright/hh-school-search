@@ -16,10 +16,7 @@ public class Indexing {
 
         HashMap<String, TermInv> invIndex = getInvertedIndex(docs);
 
-        InvertedIndex invertedIndex = new InvertedIndex();
-        invertedIndex.invIndex = invIndex;   // HashMap не мог нормально парситься Gson'ом
-
-        FileOperations.invIndexToJson(invertedIndex, "inv_index.json");
+        FileOperations.invIndexToJson(invIndex, "inv_index.json");
 
     }
 

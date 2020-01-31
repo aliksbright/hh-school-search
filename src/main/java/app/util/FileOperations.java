@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class FileOperations {
     public static ArrayList<Document> getDocsFromFile(String filename) {
@@ -35,10 +36,13 @@ public class FileOperations {
         return lines;
     }
 
-    public static void invIndexToJson(InvertedIndex invIndex, String filename) {
+    public static void invIndexToJson(HashMap<String, TermInv> invIndexMap, String filename) {
+        InvertedIndex invertedIndex = new InvertedIndex();
+        invertedIndex.invIndex = invIndexMap;   // HashMap не мог нормально парситься Gson'ом
+
         Gson gson = new Gson();
         File file = new File(filename);
-        String jsonInvIndex = gson.toJson(invIndex);
+        String jsonInvIndex = gson.toJson(invertedIndex);
         try {
             FileWriter fw = new FileWriter(file);
             fw.write(jsonInvIndex);
