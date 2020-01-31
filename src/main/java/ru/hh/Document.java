@@ -1,6 +1,8 @@
 package ru.hh;
 
-public class Document {
+import java.io.Serializable;
+
+public class Document implements Serializable {
     public Document(long documentId, String text) {
         this.documentId = documentId;
         this.text = text;

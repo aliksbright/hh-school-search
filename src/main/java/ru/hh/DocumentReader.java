@@ -1,12 +1,9 @@
 package ru.hh;
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
+import java.util.Scanner;
 
 public class DocumentReader {
 
@@ -15,26 +12,15 @@ public class DocumentReader {
         this.documentPath = documentPath;
     }
 
-    // documents is csv file documentid; text
-    public List<Document> GetDocuments() {
+    public ArrayList<Document> GetDocuments() {
         var documents = new ArrayList<Document>();
-        try (Stream<String> stream = Files.lines( Paths.get(documentPath), StandardCharsets.UTF_8))
-        {
-            stream.forEach(s -> {
-              try
-              {
-                  var documentArray = s.split(";", 2);
-                  documents.add(new Document(Long.parseLong(documentArray[0]), documentArray[1]));
-
-              }
-              catch (NumberFormatException e)
-              {
-                  e.printStackTrace();
-              }
-            });
-        }
-        catch (IOException e)
-        {
+        long documentId = 1;
+        try (Scanner scanner = new Scanner(new File(documentPath));){
+            while (scanner.hasNextLine()) {
+                var line = scanner.nextLine();
+                documents.add(new Document(documentId++, line));
+            }
+        } catch (IOException e){
             e.printStackTrace();
         }
         return documents;

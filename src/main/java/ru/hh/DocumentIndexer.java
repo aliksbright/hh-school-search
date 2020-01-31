@@ -11,8 +11,8 @@ public class DocumentIndexer {
     }
 
     public void Index(){
-        for(var document : documentReader.GetDocuments()) {
-            indexer.addDocument(document);
-        }
+        var documents = documentReader.GetDocuments();
+        indexer.addDocuments(documents);
+
     }
 }
