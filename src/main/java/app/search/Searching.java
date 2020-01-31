@@ -28,13 +28,10 @@ public class Searching {
         List<Integer> requestedDocs = getRequestedDocs(invIndex, query);
 
         printRequestedDocs(requestedDocs);
-
-
-
     }
 
     public static List<Integer> getRequestedDocs(HashMap<String, TermInv> invIndex, String query) {
-
+        return null;
     }
 
     public static void printRequestedDocs(List<Integer> requestedDocs) {
