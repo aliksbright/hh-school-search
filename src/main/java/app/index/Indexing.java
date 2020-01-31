@@ -5,17 +5,33 @@ import app.structure.TermInv;
 import app.structure.Term;
 import app.util.FileOperations;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Scanner;
 
 public class Indexing {
     public static void runIndexing() {
-        ArrayList<Document> docs = FileOperations.getDocsFromFile("./to_index.txt");
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Write original file name to index:");
+        String originalFile = scanner.next();
 
+        while (!new File(originalFile).canRead()) {
+            System.out.println("File does not exist! Write correct file name to index:");
+            originalFile = scanner.next();
+        }
+
+        System.out.println("Write index file name");
+        String indexFile = scanner.next();
+
+        System.out.println("Indexing running...");
+
+        ArrayList<Document> docs = FileOperations.getDocsFromFile(originalFile);
         HashMap<String, TermInv> invIndex = getInvertedIndex(docs);
+        FileOperations.invIndexToJson(invIndex, indexFile);
 
-        FileOperations.invIndexToJson(invIndex, "inv_index.json");
+        System.out.println("Success!");
     }
 
     public static HashMap<String, TermInv> getInvertedIndex(List<Document> docs) {
