@@ -1,4 +1,19 @@
 # hh-school-search
+* Реализована индексация исходного файла.
+* Реализовано добавление токенов в словарь, для последующего использования в поиске.
+* Реализован поиск запрошенного слова по словарю и вывод в консоль соответсвующих документов из индекса.
+* Каждая строка в исходном файле считается документом.
+Первое слово в строке считается id документа.
+
+Запуск:
+
+cd <path to project>
+
+mvn clean compile assembly:single
+
+java -jar target/search-1.0-SNAPSHOT-jar-with-dependencies.jar -i <path to index file> <path to file for indexing>
+
+java -jar target/search-1.0-SNAPSHOT-jar-with-dependencies.jar -s <path to index file> <search request>
 ## Дз по поиску 
 
 Реализовать свой простой поиск на java, который может работать в 2 режимах: 
