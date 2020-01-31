@@ -3,6 +3,8 @@ package searcher;
 import index.Dictionary;
 import index.Index;
 
+import java.util.Set;
+
 
 public class Searcher {
     private Index index;
@@ -14,8 +16,11 @@ public class Searcher {
     }
 
     public void printDocumentsFromIndex(String request) {
-        dictionary.getTermDictionary().get(request)
-                .forEach(id -> System.out.println(id + " " + index.getIndexMap().get(id)));
+        Set<String> ids = dictionary.getTermDictionary().get(request);
+        if (ids == null)
+            System.out.println("No matches!");
+        else
+            ids.forEach(id -> System.out.println(id + " " + index.getIndexMap().get(id)));
     }
 
     public Index getIndex() {
