@@ -24,26 +24,43 @@ public class Searcher {
                 .replaceAll("\\s\\s", " ")
                 .replaceAll("[.,/!?;:]", "");
         this.invIndex = invIndex;
-        setMode(query);
     }
 
-    private void setMode(String query) {
+    public Set<Integer> getRequestedDocs() {
+        List<Integer> requestedDocs = null;
         if (query.contains("\""))
-            this.mode = Mode.PHRASE;
+            requestedDocs = phrase();
         else if (query.contains("~"))
-            this.mode = Mode.MINOR;
+            requestedDocs = minor();
         else if (query.contains("OR"))
-            this.mode = Mode.OR;
+            requestedDocs = or();
         else if (query.contains("NOT"))
-            this.mode = Mode.NOT;
+            requestedDocs = not();
         else if (query.contains("AND") || query.contains("\\s"))
-            this.mode = Mode.AND;
+            requestedDocs = and();
         else
-            this.mode = Mode.TERM;
+            requestedDocs = term();
+        return Set.copyOf(requestedDocs);
     }
 
     private List<Integer> phrase() {
         List<String> queryList = List.of(query.replaceAll("\"", "").split("\\s"));
+        return null;
+    }
+
+    private List<Integer> and() {
+        return null;
+    }
+
+    private List<Integer> or() {
+        return null;
+    }
+
+    private List<Integer> minor() {
+        return null;
+    }
+
+    private List<Integer> not() {
         return null;
     }
 
@@ -56,12 +73,4 @@ public class Searcher {
         }
     }
 
-    public Set<Integer> getRequestedDocs() {
-        switch (mode) {
-            case TERM:
-                return Set.copyOf(term());
-            default:
-                return null;
-        }
-    }
 }
