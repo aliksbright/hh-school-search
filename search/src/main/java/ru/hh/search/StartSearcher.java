@@ -22,13 +22,13 @@ public class StartSearcher {
     }
 
     private void fillActions() {
-        this.actions.put("-i", new ConsoleIndexer());
-        this.actions.put("-s", new ConsoleSearcher());
+        this.actions.put("-i", new ConsoleIndexer(this.args));
+        this.actions.put("-s", new ConsoleSearcher(this.args));
         this.actions.put("-h", new Help());
     }
 
     public void start() {
-        this.actions.getOrDefault(this.args.length != 0 ? this.args[0] : "-h", new Help()).start(this.args);
+        this.actions.getOrDefault(this.args.length != 0 ? this.args[0] : "-h", new Help()).start();
     }
 
     public static void main(String[] args) {

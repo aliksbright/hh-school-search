@@ -9,7 +9,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.PrintWriter;
+import java.io.Writer;
 
 /**
  * Создает xml файл для индекса.
@@ -19,27 +19,20 @@ import java.io.PrintWriter;
  */
 public class CreateXML {
 
-    private DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-    private DocumentBuilder docBuilder;
     private Document doc;
     private Element root;
 
-    private PrintWriter writer;
+    private final Writer writer;
 
-    public CreateXML(PrintWriter writer) {
+    public CreateXML(Writer writer) throws ParserConfigurationException {
         this.writer = writer;
         prepare();
     }
 
-    private void prepare() {
-        try {
-            docBuilder = docFactory.newDocumentBuilder();
-            doc = docBuilder.newDocument();
-            root = doc.createElement("documents");
-            this.doc.appendChild(this.root);
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        }
+    private void prepare() throws ParserConfigurationException {
+        this.doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        this.root = this.doc.createElement("documents");
+        this.doc.appendChild(this.root);
     }
 
     public void addElement(String documentId, String lineId, String line) {
@@ -50,13 +43,9 @@ public class CreateXML {
         this.root.appendChild(document);
     }
 
-    public void print() {
-        try {
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.transform(new DOMSource(this.doc), new StreamResult(this.writer));
-        } catch (TransformerException e) {
-            e.printStackTrace();
-        }
+    public void save() throws TransformerException {
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.transform(new DOMSource(this.doc), new StreamResult(this.writer));
     }
 }

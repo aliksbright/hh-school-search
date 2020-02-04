@@ -3,6 +3,8 @@ package ru.hh.search;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import java.io.*;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -42,38 +44,38 @@ public class IndexerTest {
     }
 
     @Test
-    public void whenSomeFilesToIndex() throws FileNotFoundException {
+    public void whenSomeFilesToIndex() throws IOException, ParserConfigurationException, TransformerException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
-                "<documents>\n" +
-                "    <document documentId=\"1\" lineId=\"1\">java/разработчик/it/компанию/два</document>\n" +
-                "    <document documentId=\"2\" lineId=\"2\">c++/developer/разработки/два</document>\n" +
-                "    <document documentId=\"3\" lineId=\"3\">kotlin/java/знаниях/два</document>\n" +
-                "    <document documentId=\"4\" lineId=\"4\">java/разработчик/it/компанию</document>\n" +
-                "    <document documentId=\"5\" lineId=\"5\">c++/developer/разработки</document>\n" +
-                "    <document documentId=\"6\" lineId=\"6\">kotlin/java/знаниях</document>\n" +
-                "</documents>\n";
-        Indexer indexer = new Indexer(
-                FileSystems.getDefault().getPath(System.getProperty("java.io.tmpdir"), "/testIndexer"),
-                new PrintWriter(out));
-        indexer.execute();
-        assertEquals(expected, out.toString());
+        StringJoiner expected = new StringJoiner(System.lineSeparator())
+                .add("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>")
+                .add("<documents>")
+                .add("    <document documentId=\"1\" lineId=\"1\">java/разработчик/it/компанию/два</document>")
+                .add("    <document documentId=\"2\" lineId=\"2\">c++/developer/разработки/два</document>")
+                .add("    <document documentId=\"3\" lineId=\"3\">kotlin/java/знаниях/два</document>")
+                .add("    <document documentId=\"4\" lineId=\"4\">java/разработчик/it/компанию</document>")
+                .add("    <document documentId=\"5\" lineId=\"5\">c++/developer/разработки</document>")
+                .add("    <document documentId=\"6\" lineId=\"6\">kotlin/java/знаниях</document>")
+                .add("</documents>")
+                .add("");
+        Indexer indexer = new Indexer(new PrintWriter(out));
+        indexer.execute(FileSystems.getDefault().getPath(System.getProperty("java.io.tmpdir"), "testIndexer"));
+        assertEquals(expected.toString(), out.toString());
     }
 
     @Test
-    public void whenOneFileToIndex() {
+    public void whenOneFileToIndex() throws IOException, TransformerException, ParserConfigurationException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
-                "<documents>\n" +
-                "    <document documentId=\"1\" lineId=\"1\">java/разработчик/it/компанию</document>\n" +
-                "    <document documentId=\"2\" lineId=\"2\">c++/developer/разработки</document>\n" +
-                "    <document documentId=\"3\" lineId=\"3\">kotlin/java/знаниях</document>\n" +
-                "</documents>\n";
-        Indexer indexer = new Indexer(
-                FileSystems.getDefault().getPath(System.getProperty("java.io.tmpdir"), "/testIndexer/one.txt"),
-                new PrintWriter(out));
-        indexer.execute();
-        assertEquals(expected, out.toString());
+        StringJoiner expected = new StringJoiner(System.lineSeparator())
+                .add("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>")
+                .add("<documents>")
+                .add("    <document documentId=\"1\" lineId=\"1\">java/разработчик/it/компанию</document>")
+                .add("    <document documentId=\"2\" lineId=\"2\">c++/developer/разработки</document>")
+                .add("    <document documentId=\"3\" lineId=\"3\">kotlin/java/знаниях</document>")
+                .add("</documents>")
+                .add("");
+        Indexer indexer = new Indexer(new PrintWriter(out));
+        indexer.execute(FileSystems.getDefault().getPath(System.getProperty("java.io.tmpdir"), "testIndexer", "one.txt"));
+        assertEquals(expected.toString(), out.toString());
     }
 
 }

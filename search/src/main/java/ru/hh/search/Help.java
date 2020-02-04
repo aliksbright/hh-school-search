@@ -13,7 +13,7 @@ public class Help implements Action {
     private StringJoiner sj;
 
     @Override
-    public void start(String[] args) {
+    public void start() {
         this.sj = new StringJoiner(System.lineSeparator())
                 .add("Добро пожаловать в поисковик им. Бухтоярова =)")
                 .add("Для индексации документа введите: ")

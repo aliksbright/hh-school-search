@@ -108,7 +108,7 @@ public class Search {
         }
         List<String> tokens2 = Arrays.stream(tokens.toArray(), strt, end + 1)
                 .map(Object::toString).collect(Collectors.toList());
-        this.query = String.join(" ", tokens2);
+        this.query = String.join(" and ", tokens2);
         return andNotSearch().stream().filter(doc -> {
             List<Term> terms = doc.getTerms().stream()
                     .filter(term -> tokens2.contains(term.getValue()))
@@ -125,5 +125,4 @@ public class Search {
             return ok;
         }).collect(Collectors.toSet());
     }
-
 }

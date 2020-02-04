@@ -1,6 +1,7 @@
 package ru.hh.search;
 
 import java.io.FileNotFoundException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Scanner;
@@ -19,14 +20,22 @@ public class ConsoleSearcher implements Action {
      */
     private String query;
 
+    private final String[] args;
+
+    public ConsoleSearcher(String[] args) {
+        this.args = args;
+    }
+
     @Override
-    public void start(String[] args) {
+    public void start() {
         try {
             if (args.length < 2) {
                 throw new IndexOutOfBoundsException("Вы ввели не все необходимые данные." +
                         " Запустите программу с ключом -h для помощи.");
             }
-            pathChecker(Paths.get(args[1]));
+            if (!Paths.get(args[1]).toFile().exists()) {
+                throw new FileNotFoundException("Файла индекса не существует - ");
+            }
             Scanner scanner = new Scanner(System.in);
             System.out.println("Введите поисковый запрос:");
             this.query = scanner.nextLine();
@@ -43,7 +52,9 @@ public class ConsoleSearcher implements Action {
             StringBuilder sb = new StringBuilder();
             result.forEach((id, str) -> sb.append(id).append(" - ").append(str).append(System.lineSeparator()));
             System.out.println(sb.toString());
-        } catch (IndexOutOfBoundsException | FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
+            System.out.println(e.getMessage() + args[1]);
+        } catch (IndexOutOfBoundsException e) {
             System.out.println(e.getMessage());
         }
     }

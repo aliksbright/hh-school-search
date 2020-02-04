@@ -38,8 +38,8 @@ public class Util {
      */
     public static void pathChecker(Path... paths) throws FileNotFoundException {
         for (Path path : paths) {
-            if (!path.toFile().exists()) {
-                throw new FileNotFoundException("Файла или директории не существует " + path.toString());
+            if (path.toFile().isDirectory() && !path.toFile().exists()) {
+                throw new FileNotFoundException("Директории не существует - " + path.toString());
             }
         }
     }

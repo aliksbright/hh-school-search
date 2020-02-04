@@ -9,7 +9,6 @@ package ru.hh.search;
 public interface Action {
     /**
      * Запускает одну из частей программы.
-     * @param args - аргументы для программы.
      */
-    void start(String[] args);
+    void start();
 }

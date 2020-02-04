@@ -46,7 +46,7 @@ public class InvertedIndex {
             parser = factory.newSAXParser();
             parser.parse(index.toFile(), new IndexReaderHandlers());
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            e.printStackTrace();
+            System.out.println("Файл индекса сломан или не являетя файлом индекса.");;
         }
         return this.invertedIndex;
     }
