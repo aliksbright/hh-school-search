@@ -209,7 +209,7 @@ public class IndexerTest {
 
         idx.indexFile(TEST_HELLO_WORLD_FILE, inverseIndex);
 
-        SearchRequest       req             = new SearchRequest("(NOT hello) OR (hello AND world)");
+        SearchRequest       req         = new SearchRequest("(NOT hello) OR (hello AND world)");
         //Iterator<Integer>   answer          = List.of(2,3).stream().iterator();
 
         req.setInverseIndex(inverseIndex);

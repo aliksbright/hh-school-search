@@ -163,7 +163,8 @@ public class InverseIndex implements BiConsumer<Long, String> {
         byte [] docId = VarByte.longToVarByte(documentNumber);
 
         // Cleanup
-        doc = document.replaceAll("[!~?#$%^&*_\\-=+'\"><()\\[\\]{}.,:;]", "");
+        doc = document.replaceAll("[~#$%^&*_=+'\"><()\\[\\]{}]", "");
+        doc = document.replaceAll("[!?.,:;\\-]", " ");
         doc = doc.replaceAll("\\s+", " ");
         doc = doc.replaceAll("^\\s+|\\s+$", "");
         doc = doc.toLowerCase();
