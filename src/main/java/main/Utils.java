@@ -14,7 +14,7 @@ public class Utils {
 
     private static StringBuilder sb = new StringBuilder();
 
-    public static Map<String, List<Long>> readIndexLong(String indexPath) throws IOException {
+    public static Map<String, List<Long>> readIndexLong(String indexPath) {
         File file = new File(indexPath);
         if (file.length() != 0) {
             ObjectMapper objectMapper = new ObjectMapper();

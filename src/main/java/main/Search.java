@@ -15,10 +15,11 @@ public class Search {
     private final String EMPTY_RESULT = "";
     private Map<String, List<Long>> index;
     private RandomAccessFile docFile;
+    private final String NOTHING_FOUND = "Ничего не нашлось :(";
+
 
 
     public void search(String indexPath, String docFilePath, String query, int limit) throws IOException {
-        String NOTHING_FOUND = "Ничего не нашлось :(";
         index = readIndexLong(indexPath);
         docFile = new RandomAccessFile(docFilePath, "rw");
 
