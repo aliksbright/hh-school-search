@@ -53,10 +53,22 @@ public class Search {
             }
         }).collect(Collectors.toList());
     }
+    private List<String> allDocs(Map<String, List<Long>> indexLong) {
+        return indexLong.values().stream().flatMap(Collection::stream).map(aLong -> {
+            try {
+                docFile.seek(aLong);
+                return docFile.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return EMPTY_RESULT;
+            }
+        }).distinct()
+                .collect(Collectors.toList());
+    }
 
     private List<String> searchWordsWithNot(String query) {
         ArrayList<String> queryWords = new ArrayList<>(Arrays.asList(query.split(" ")));
-        List<String> originalWord = searchOneWord(index, queryWords.get(0));
+        List<String> originalWord = queryWords.get(0).toLowerCase().equals("not") ? allDocs(index) : searchOneWord(index, queryWords.get(0));
         queryWords.remove(0);
         for (String excludedWord : queryWords) {
             originalWord.removeAll(searchOneWord(index, excludedWord));
