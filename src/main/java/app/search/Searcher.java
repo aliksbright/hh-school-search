@@ -4,19 +4,15 @@ import app.structure.InvertedIndex;
 import app.structure.Term;
 import app.structure.TermInv;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.lang.reflect.Array;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Searcher {
 
-    enum Mode {
-        TERM, AND, NOT, OR, MINOR, PHRASE
-    }
-
     private String query;
-    private Mode mode;
     private HashMap<String, TermInv> invIndex;
 
     public Searcher(String query, HashMap<String, TermInv> invIndex) {
@@ -27,50 +23,79 @@ public class Searcher {
     }
 
     public Set<Integer> getRequestedDocs() {
-        List<Integer> requestedDocs = null;
-        if (query.contains("\""))
+        Set<Integer> requestedDocs;
+        if (query.matches("^\"(.)+\"$"))
             requestedDocs = phrase();
-        else if (query.contains("~"))
-            requestedDocs = minor();
-        else if (query.contains("OR"))
-            requestedDocs = or();
-        else if (query.contains("NOT"))
+        else if (query.matches(".*[\\^\\s]NOT\\s[\\wA-Яа-я].*"))
             requestedDocs = not();
-        else if (query.contains("AND") || query.contains("\\s"))
-            requestedDocs = and();
+        else if (query.matches(".*\\sOR\\s.*"))
+            requestedDocs = or();
         else
-            requestedDocs = term();
-        return Set.copyOf(requestedDocs);
+            requestedDocs = termAndMinor();
+        return requestedDocs;
     }
 
-    private List<Integer> phrase() {
+    private Set<Integer> phrase() {
         List<String> queryList = List.of(query.replaceAll("\"", "").split("\\s"));
         return null;
     }
 
-    private List<Integer> and() {
-        return null;
-    }
+    // Term-query, AND-query, MIN OR-query
+    private Set<Integer> termAndMinor() {
+        HashMap<Integer, Integer> docIdCountMap = new HashMap<>();
 
-    private List<Integer> or() {
-        return null;
-    }
+        String[] queryArray;
+        int minIn;
 
-    private List<Integer> minor() {
-        return null;
-    }
-
-    private List<Integer> not() {
-        return null;
-    }
-
-    private List<Integer> term() {
-        TermInv termInv = invIndex.get(query.split(" ")[0]);
-        if (termInv == null) {
-            return List.of(-1);
+        Pattern pattern = Pattern.compile("~\\d+");
+        Matcher matcher = pattern.matcher(query);
+        if (matcher.find()) {
+            queryArray = query.replaceFirst("~\\d+", "").split("\\sOR\\s");
+            minIn = Integer.parseInt(matcher.group(0).replaceFirst("~", ""));
+        } else if (query.matches("\\sAND\\s")) {
+            queryArray = query.split("\\sAND\\s");
+            minIn = queryArray.length;
         } else {
-            return termInv.getDocIds();
+            queryArray = query.split("\\s");
+            minIn = queryArray.length;
         }
+
+        Arrays.stream(queryArray)
+                .map(s -> invIndex.get(s.trim().toLowerCase()))
+                .filter(Objects::nonNull)
+                .flatMap(s1 -> Set.copyOf(s1.getDocIds()).stream())
+                .forEach(id -> docIdCountMap.put(id, docIdCountMap.getOrDefault(id, 0) + 1));
+
+        return docIdCountMap.keySet().stream()
+                .filter(id -> docIdCountMap.get(id) == minIn)
+                .collect(Collectors.toSet());
+    } // TODO refac... it
+
+    private Set<Integer> not() {
+        String regex = "[\\^\\s]NOT\\s[\\wA-Яа-я]+";
+        String toReplace = "[\\^\\s]NOT\\s";
+
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(query);
+        matcher.find();
+        String minusWord = matcher.group(0).replaceAll(toReplace, "");
+        String subQuery = query.replaceFirst(regex, "");
+
+        Searcher searcher = new Searcher(subQuery, invIndex);
+        Searcher searcherExclude = new Searcher(minusWord, invIndex);
+
+        Set<Integer> docs = searcher.getRequestedDocs();
+        docs.removeAll(searcherExclude.getRequestedDocs());
+
+        return docs;
+    }
+
+    private Set<Integer> or() {
+        return Arrays.stream(query.split("\\sOR\\s"))
+                .map(word -> invIndex.get(word.trim().toLowerCase()))
+                .filter(Objects::nonNull)
+                .flatMap(termInv -> termInv.getDocIds().stream())
+                .collect(Collectors.toSet());
     }
 
 }

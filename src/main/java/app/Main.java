@@ -11,7 +11,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         while (true) {
             System.out.println("Write work mode: \"index\" or \"search\"\nAlso can use: \"i\" or \"s\"");
-            String mode = scanner.next();
+            String mode = scanner.nextLine();
             if (mode.equals("index") || mode.equals("i")) {
                 Indexing.runIndexing();
                 break;
