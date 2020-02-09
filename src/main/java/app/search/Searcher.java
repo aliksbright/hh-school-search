@@ -36,8 +36,37 @@ public class Searcher {
     }
 
     private Set<Integer> phrase() {
-        List<String> queryList = List.of(query.replaceAll("\"", "").split("\\s"));
-        return null;
+        Set<Integer> requestedDocs = new HashSet<>();
+        String[] listQuery = query.replaceAll("\"", "").split("\\s");
+        for (int i = 0; i < listQuery.length - 1; i++) {
+            HashMap<Integer, Set<Integer>> map = new HashMap<>();
+            List<Integer> docIds = invIndex.getOrDefault(listQuery[i], new TermInv(-1, -1)).getDocIds();
+            List<Integer> positionsInDoc = invIndex.getOrDefault(listQuery[i], new TermInv(-1, -1)).getPositionInDoc();
+            for (int j = 0; j < docIds.size(); j++) {
+                Set<Integer> pos = map.get(docIds.get(j));
+                if (pos == null) {
+                    pos = new HashSet<>();
+                    pos.add(positionsInDoc.get(j));
+                    map.put(docIds.get(j), pos);
+                } else {
+                    pos.add(positionsInDoc.get(j));
+                }
+            }
+
+            List<Integer> nextDocIds = invIndex.getOrDefault(listQuery[i + 1], new TermInv(-10, -1)).getDocIds();
+            List<Integer> nextPositionsInDoc = invIndex.getOrDefault(listQuery[i + 1], new TermInv(-10, -1)).getPositionInDoc();
+            for (int j = 0; j < nextDocIds.size(); j++) {
+                Set<Integer> pos = map.get(nextDocIds.get(j));
+                if (pos != null) {
+                    if (pos.contains(nextPositionsInDoc.get(j) - 1) ||
+                            pos.contains(nextPositionsInDoc.get(j) + 1)) {
+                        requestedDocs.add(nextDocIds.get(j));
+                    }
+                }
+            }
+        }
+
+        return requestedDocs;
     }
 
     // Term-query, AND-query, MIN OR-query
@@ -69,7 +98,7 @@ public class Searcher {
         return docIdCountMap.keySet().stream()
                 .filter(id -> docIdCountMap.get(id) == minIn)
                 .collect(Collectors.toSet());
-    } // TODO refac... it
+    }
 
     private Set<Integer> not() {
         String regex = "[\\^\\s]NOT\\s[\\wA-Яа-я]+";
