@@ -20,9 +20,8 @@ public class FileOperations {
 
     public static ArrayList<String> getLinesFromFile(String filename) {
         ArrayList<String> lines = new ArrayList<>();
-        try {
-            FileReader fReader = new FileReader(filename);
-            BufferedReader reader = new BufferedReader(fReader);
+        try (FileReader fReader = new FileReader(filename);
+             BufferedReader reader = new BufferedReader(fReader)) {
             String line = reader.readLine();
             while (line != null) {
                 lines.add(line);
@@ -43,11 +42,9 @@ public class FileOperations {
         Gson gson = new Gson();
         File file = new File(filename);
         String jsonInvIndex = gson.toJson(invertedIndex);
-        try {
-            FileWriter fw = new FileWriter(file);
+        try (FileWriter fw = new FileWriter(file)) {
             fw.write(jsonInvIndex);
             fw.flush();
-            fw.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -58,9 +55,8 @@ public class FileOperations {
         File file = new File(filename);
 
         String jsonIndex = null;
-        try {
-            FileReader fr = new FileReader(file);
-            BufferedReader bReader = new BufferedReader(fr);
+        try (FileReader fr = new FileReader(file);
+             BufferedReader bReader = new BufferedReader(fr)) {
             jsonIndex = bReader.readLine();
         } catch (IOException e) {
             e.printStackTrace();
