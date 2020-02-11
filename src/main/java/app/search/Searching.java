@@ -50,11 +50,13 @@ public class Searching {
     }
 
     public static String removeStopWords(String string) {
+        final String SPACE_REG = "\\s";
+
         for (String word : FileOperations.getLinesFromFile("stop_words.txt")) {
             string = string
-                    .replaceAll("\\s" + word + "$", "")
-                    .replaceAll("^" + word + "\\s", "")
-                    .replaceAll("\\s" + word + "\\s", " ");
+                    .replaceAll(SPACE_REG + word + "$", "")
+                    .replaceAll("^" + word + SPACE_REG, "")
+                    .replaceAll(SPACE_REG + word + SPACE_REG, " ");
         }
         return string;
     }

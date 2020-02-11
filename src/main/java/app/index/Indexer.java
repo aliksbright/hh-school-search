@@ -2,6 +2,7 @@ package app.index;
 
 import app.structure.Document;
 import app.structure.Term;
+import app.util.RegEx;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.List;
 public class Indexer {
 
     public static List<String> getTerms(Document doc) {
-        return List.of(doc.getPrimary().toLowerCase().split("[\\s,;:.!?/]"));
+        return List.of(doc.getPrimary().toLowerCase().split(RegEx.PUNCT_WITH_SPACE));
     }
 
     public static List<String> getLemmatizedTerms(List<String> terms) {

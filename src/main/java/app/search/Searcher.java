@@ -3,6 +3,7 @@ package app.search;
 import app.structure.InvertedIndex;
 import app.structure.Term;
 import app.structure.TermInv;
+import app.util.RegEx;
 
 import java.lang.reflect.Array;
 import java.util.*;
@@ -17,8 +18,8 @@ public class Searcher {
 
     public Searcher(String query, HashMap<String, TermInv> invIndex) {
         this.query = query
-                .replaceAll("\\s\\s", " ")
-                .replaceAll("[.,/!?;:]", "");
+                .replaceAll(RegEx.SPACE + RegEx.SPACE, " ")
+                .replaceAll(RegEx.PUNCTUATION, "");
         this.invIndex = invIndex;
     }
 
@@ -28,7 +29,7 @@ public class Searcher {
             requestedDocs = phrase();
         else if (query.matches(".*[\\^\\s]NOT\\s[\\wA-Яа-я].*"))
             requestedDocs = not();
-        else if (query.matches(".*\\sOR\\s.*"))
+        else if (query.matches(".*" + RegEx.OR + ".*"))
             requestedDocs = or();
         else
             requestedDocs = termAndMinor();
@@ -37,7 +38,7 @@ public class Searcher {
 
     private Set<Integer> phrase() {
         Set<Integer> requestedDocs = new HashSet<>();
-        String[] listQuery = query.replaceAll("\"", "").split("\\s");
+        String[] listQuery = query.replaceAll("\"", "").split(RegEx.SPACE);
         for (int i = 0; i < listQuery.length - 1; i++) {
             HashMap<Integer, Set<Integer>> map = new HashMap<>();
             List<Integer> docIds = invIndex.getOrDefault(listQuery[i], new TermInv(-1, -1)).getDocIds();
@@ -76,16 +77,18 @@ public class Searcher {
         String[] queryArray;
         int minIn;
 
-        Pattern pattern = Pattern.compile("~\\d+");
+        String tilda_digit = "~\\d+";
+
+        Pattern pattern = Pattern.compile(tilda_digit);
         Matcher matcher = pattern.matcher(query);
         if (matcher.find()) {
-            queryArray = query.replaceFirst("~\\d+", "").split("\\sOR\\s");
+            queryArray = query.replaceFirst(tilda_digit, "").split(RegEx.OR);
             minIn = Integer.parseInt(matcher.group(0).replaceFirst("~", ""));
-        } else if (query.matches("\\sAND\\s")) {
-            queryArray = query.split("\\sAND\\s");
+        } else if (query.matches(RegEx.AND)) {
+            queryArray = query.split(RegEx.AND);
             minIn = queryArray.length;
         } else {
-            queryArray = query.split("\\s");
+            queryArray = query.split(RegEx.SPACE);
             minIn = queryArray.length;
         }
 
@@ -120,7 +123,7 @@ public class Searcher {
     }
 
     private Set<Integer> or() {
-        return Arrays.stream(query.split("\\sOR\\s"))
+        return Arrays.stream(query.split(RegEx.OR))
                 .map(word -> invIndex.get(word.trim().toLowerCase()))
                 .filter(Objects::nonNull)
                 .flatMap(termInv -> termInv.getDocIds().stream())
