@@ -1,3 +1,7 @@
+# ~~~ Custom ignorables ~~~
+hh-school-search-test/
+Todos.java
+
 # ~~~ Java .gitignore template ~~~
 # Compiled class file
 *.class
